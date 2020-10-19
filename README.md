@@ -1,5 +1,10 @@
 # go-bot
 Simple twitch bot made with Go - Study purpose
+### Packages
+- [gorilla/websocket](https://github.com/gorilla/websocket)
+	- To connect to Twitch chat via websocket
+- [joho/godotenv](https://github.com/joho/godotenv)
+	- Parse `.env` file
 ### Todo:
 1. [ ] Connect
 	- [ ] 
