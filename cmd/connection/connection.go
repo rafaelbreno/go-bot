@@ -26,11 +26,11 @@ func Connect() net.Conn {
 	return conn
 }
 
-func disconnect(conn net.Conn) {
+func Disconnect(conn net.Conn) {
 	conn.Close()
 }
 
-func logon(conn net.Conn) {
+func Logon(conn net.Conn) {
 	bot := getCredentials()
 
 	pass := []byte(fmt.Sprintf("PASS %s\r\n", bot.BotToken))

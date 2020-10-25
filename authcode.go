@@ -3,44 +3,43 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"github.com/joho/godotenv"
 	"github.com/rafaelbreno/go-bot/cmd/connection"
 	"github.com/rafaelbreno/go-bot/parser"
 
 	"net"
 	"net/textproto"
-	"os"
 )
 
-func sendMessage(channel string, message string) []byte {
-	msg := fmt.Sprintf("PRIVMSG #%s :%s\r\n", channel, message)
-	return []byte(msg)
+func parseToTwitch(str string) []byte {
+	return []byte(fmt.Sprintf("%s\r\n", str))
 }
 
-func sendPong(command string) []byte {
-	return []byte(command)
+func sendMessage(channel string, message string) []byte {
+	msg := fmt.Sprintf("PRIVMSG #%s :%s", channel, message)
+	return parseToTwitch(msg)
 }
 
 func execMessage(conn net.Conn, message parser.Message) {
+	fmt.Println(message)
+	//	fmt.Println(message.Username == "Twitch")
 	if message.Command == "PONG" {
-		conn.Write([]byte(message.Content))
+		conn.Write(parseToTwitch(message.Content))
 	}
 }
 
 func main() {
 	conn := connection.Connect()
-	logon(conn)
+	connection.Logon(conn)
 	tp := textproto.NewReader(bufio.NewReader(conn))
 	for {
 		status, err := tp.ReadLine()
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println(status)
+		//	fmt.Println(status)
 		message := parser.Parse(status)
 		execMessage(conn, message)
-		fmt.Println(message)
-		//		fmt.Printf("Type: %T \n Status: %s \n\n", status, status)
+		//	fmt.Println(message)
 	}
-	disconnect(conn)
+	connection.Disconnect(conn)
 }

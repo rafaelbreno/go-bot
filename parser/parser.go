@@ -11,6 +11,15 @@ type Message struct {
 	Command  string
 }
 
+func parseUserMessage(rawStatus string) Message {
+	message := Message{}
+	splitted := strings.SplitN(rawStatus, "!", 2)
+	// Getting Username
+	message.Username = strings.TrimPrefix(splitted[0], ":")
+	message.Content = splitted[1]
+	return message
+}
+
 /*
 Possible Messages:
 - Twitch default connecting messages
@@ -24,7 +33,7 @@ Possible Messages:
 func split(rawStatus string) Message {
 
 	message := Message{}
-	if strings.HasPrefix(rawStatus, ":tmi.twitch.tv") {
+	if strings.HasPrefix(rawStatus, ":tmi.twitch.tv") || strings.HasPrefix(rawStatus, ":rafiuskybot.tmi.twitch.tv") {
 		// Default twitch message
 		message.Username = "Twitch"
 		message.Content = ""
@@ -36,9 +45,7 @@ func split(rawStatus string) Message {
 		message.Command = "PONG"
 	} else {
 		// User's Message
-		message.Username = "Twitch"
-		message.Content = "User Message"
-		message.Command = ""
+		message = parseUserMessage(rawStatus)
 	}
 	return message
 }
