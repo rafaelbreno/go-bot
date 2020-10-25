@@ -2,13 +2,11 @@
 - Simple twitch bot made with Go - Study purpose
 - I'm following the official [Twitch Chatbot Docs](https://dev.twitch.tv/docs/irc/guide)
 ### Packages
-- [gorilla/websocket](https://github.com/gorilla/websocket)
-	- To connect to Twitch chat via websocket
 - [joho/godotenv](https://github.com/joho/godotenv)
 	- Parse `.env` file
 ### Todo:
-1. [ ] Connect
-	- [ ] 
+1. [x] Connect
+	- [x] Connection via Golang's package [net](https://golang.org/pkg/net/) 
 999. [ ] 100% Cli
 	- This bot should be __100%__ configurable in the terminal
 	- Maybe a JSON to store info:
