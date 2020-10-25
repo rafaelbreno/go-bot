@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/joho/godotenv"
+	"github.com/rafaelbreno/go-bot/parser"
 	"net"
 	"net/textproto"
 	"os"
@@ -78,7 +79,8 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		fmt.Printf("Type: %T \n Status: %s \n\n", status, status)
+		parser.Parse(status)
+		//		fmt.Printf("Type: %T \n Status: %s \n\n", status, status)
 	}
 	disconnect(conn)
 }
