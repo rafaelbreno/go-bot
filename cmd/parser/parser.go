@@ -16,7 +16,15 @@ func parseUserMessage(rawStatus string) Message {
 	splitted := strings.SplitN(rawStatus, "!", 2)
 	// Getting Username
 	message.Username = strings.TrimPrefix(splitted[0], ":")
-	message.Content = splitted[1]
+
+	// Getting the message sent
+	content := strings.SplitN(splitted[1], ":", 2)
+	message.Content = content[len(content)-1]
+
+	if strings.HasPrefix(message.Content, "!") {
+		message.Command = message.Content
+	}
+
 	return message
 }
 

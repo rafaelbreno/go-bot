@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/rafaelbreno/go-bot/cmd/connection"
-	"github.com/rafaelbreno/go-bot/parser"
+	"github.com/rafaelbreno/go-bot/cmd/parser"
 
 	"net"
 	"net/textproto"
