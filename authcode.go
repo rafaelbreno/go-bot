@@ -20,6 +20,11 @@ type Bot struct {
 	Channel string
 }
 
+type Message struct {
+	Sender string
+	Text   string
+}
+
 func connect() net.Conn {
 	conn, err := net.Dial("tcp", "irc.chat.twitch.tv:6667")
 	if err != nil {
@@ -73,7 +78,7 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println("a", status)
+		fmt.Printf("Type: %T \n Status: %s \n\n", status, status)
 	}
 	disconnect(conn)
 }
