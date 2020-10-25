@@ -41,7 +41,7 @@ func logon(conn net.Conn) {
 	conn.Write(pass)
 	conn.Write(nick)
 	conn.Write([]byte("JOIN #rafiusky\r\n"))
-
+	conn.Write(sendMessage("rafiusky", "Hello World!"))
 }
 
 func getCredentials() Bot {
@@ -53,15 +53,18 @@ func getCredentials() Bot {
 	bot.ConnectionURL = "irc.chat.twitch.tv"
 	bot.ConnectionPort = "6667"
 	bot.BotUsername = os.Getenv("BOT_USERNAME")
-	//	bot.BotPassword = os.Getenv("BOT_PASSWORD")
 	bot.BotToken = os.Getenv("OAUTH_TOKEN")
 	bot.Channel = os.Getenv("CHANNEL_NAME")
 
 	return bot
 }
 
-func main() {
+func sendMessage(channel string, message string) []byte {
+	msg := fmt.Sprintf("PRIVMSG #%s :%s\r\n", channel, message)
+	return []byte(msg)
+}
 
+func main() {
 	conn := connect()
 	logon(conn)
 	tp := textproto.NewReader(bufio.NewReader(conn))
@@ -73,5 +76,4 @@ func main() {
 		fmt.Println("a", status)
 	}
 	disconnect(conn)
-
 }
