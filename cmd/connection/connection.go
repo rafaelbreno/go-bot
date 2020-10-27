@@ -56,3 +56,11 @@ func getCredentials() Bot {
 
 	return bot
 }
+
+func GetEnv(key string) string {
+	err := godotenv.Load()
+	if err != nil {
+		panic(err)
+	}
+	return os.Getenv(key)
+}

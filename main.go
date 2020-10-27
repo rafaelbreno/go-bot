@@ -3,27 +3,29 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"github.com/rafaelbreno/go-bot/cmd/actions"
 	"github.com/rafaelbreno/go-bot/cmd/connection"
+	"github.com/rafaelbreno/go-bot/cmd/helpers"
 	"github.com/rafaelbreno/go-bot/cmd/parser"
+	"strings"
 
 	"net"
 	"net/textproto"
 )
 
-func parseToTwitch(str string) []byte {
-	return []byte(fmt.Sprintf("%s\r\n", str))
-}
-
 func sendMessage(channel string, message string) []byte {
-	msg := fmt.Sprintf("PRIVMSG #%s :%s", channel, message)
-	return parseToTwitch(msg)
+	msg := fmt.Sprintf("PRIVMSG #%s :%s\r\n", channel, message)
+	return helper.ParseToTwitch(msg)
 }
 
 func execMessage(conn net.Conn, message parser.Message) {
 	fmt.Println(message)
-	//	fmt.Println(message.Username == "Twitch")
+
+	if strings.HasPrefix(message.Command, "!") {
+		commands.Command(message.Command, conn)
+	}
 	if message.Command == "PONG" {
-		conn.Write(parseToTwitch(message.Content))
+		conn.Write(helper.ParseToTwitch(message.Content))
 	}
 }
 
@@ -36,10 +38,8 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		//	fmt.Println(status)
 		message := parser.Parse(status)
 		execMessage(conn, message)
-		//	fmt.Println(message)
 	}
 	connection.Disconnect(conn)
 }
