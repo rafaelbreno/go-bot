@@ -22,7 +22,7 @@ func execMessage(conn net.Conn, message parser.Message) {
 	fmt.Println(message)
 
 	if strings.HasPrefix(message.Command, "!") {
-		commands.Command(message.Command, conn)
+		commands.RunCommand(message.Command, conn)
 	}
 	if message.Command == "PONG" {
 		conn.Write(helper.ParseToTwitch(message.Content))

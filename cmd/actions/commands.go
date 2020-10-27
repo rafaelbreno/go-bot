@@ -6,7 +6,7 @@ import (
 	"net"
 )
 
-func Command(command string, conn net.Conn) {
+func RunCommand(command string, conn net.Conn) {
 	channel := connection.GetEnv("CHANNEL_NAME")
 	switch command {
 	case "!hello":
