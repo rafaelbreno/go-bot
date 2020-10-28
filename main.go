@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/rafaelbreno/go-bot/cmd/actions"
+	"github.com/rafaelbreno/go-bot/cmd/command"
 	"github.com/rafaelbreno/go-bot/cmd/connection"
 	"github.com/rafaelbreno/go-bot/cmd/helpers"
 	"github.com/rafaelbreno/go-bot/cmd/parser"
@@ -29,7 +30,7 @@ func execMessage(conn net.Conn, message parser.Message) {
 	}
 }
 
-func main() {
+func listen() {
 	conn := connection.Connect()
 	connection.Logon(conn)
 	tp := textproto.NewReader(bufio.NewReader(conn))
@@ -42,4 +43,8 @@ func main() {
 		execMessage(conn, message)
 	}
 	connection.Disconnect(conn)
+}
+
+func main() {
+	command.GetCommands()
 }
