@@ -9,13 +9,20 @@ import (
 type Command struct {
 	Identifier string
 	Message    string
+	Timeout    int
+	Variables  []Variable
+}
+
+type Variable struct {
+	Name  string
+	Type  string
+	Value interface{}
 }
 
 var commands []Command
 
 func GetCommands() {
 	parseCommands()
-
 	fmt.Println(commands)
 }
 
