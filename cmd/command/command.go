@@ -2,7 +2,6 @@ package command
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 )
 
@@ -21,9 +20,9 @@ type Variable struct {
 
 var commands []Command
 
-func GetCommands() {
+func GetCommands() []Command {
 	parseCommands()
-	fmt.Println(commands)
+	return commands
 }
 
 func parseCommands() {

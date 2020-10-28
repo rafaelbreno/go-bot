@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/rafaelbreno/go-bot/cmd/actions"
-	"github.com/rafaelbreno/go-bot/cmd/command"
 	"github.com/rafaelbreno/go-bot/cmd/connection"
 	"github.com/rafaelbreno/go-bot/cmd/helpers"
 	"github.com/rafaelbreno/go-bot/cmd/parser"
@@ -46,5 +45,5 @@ func listen() {
 }
 
 func main() {
-	command.GetCommands()
+	listen()
 }
