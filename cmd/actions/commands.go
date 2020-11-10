@@ -17,6 +17,8 @@ func RunCommand(command string, conn net.Conn) {
 
 	commands = GetInfo()
 
+	fmt.Println("Commands: ", commands)
+
 	i := sort.Search(len(commands), func(i int) bool {
 		return command == commands[i].Identifier
 	})

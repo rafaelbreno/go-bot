@@ -1,6 +1,6 @@
 [
     {
-        "command": "!hello",
+        "identifier": "!hello",
         "message": "Bot said \"Hello World!\" :counter times!",
         "timeout": 30, 
         "variables": [
