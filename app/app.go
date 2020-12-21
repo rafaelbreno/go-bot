@@ -12,16 +12,20 @@ import (
 **/
 type App struct {
 	Env env.Env
-	Err err.Err
+	Err *err.Err
 }
 
 var app App
 
-func Start() {
-	a, err := app.Env.Getenv("BOT_USERNAME")
-	if err != nil {
-		app.Err.Log(err)
+func init() {
+	app = App{
+		Err: &err.Err{},
 	}
+	app.Env.Err = app.Err
+}
+
+func Start() {
+	a := app.Env.Getenv("AABOT_USERNAME")
 
 	fmt.Println(a)
 }
