@@ -6,9 +6,12 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+	"go-bot/cmd/err"
 )
 
-type Env struct{}
+type Env struct {
+	Err *err.Err
+}
 
 // Loading .env file
 func init() {
@@ -18,10 +21,11 @@ func init() {
 	}
 }
 
-func (_ *Env) Getenv(key string) (string, error) {
+func (e *Env) Getenv(key string) string {
 	value := os.Getenv(key)
 	if value == "" {
-		return "", errors.New("Key not found")
+		err := errors.New("Key not found")
+		e.Err.Log(err)
 	}
-	return value, nil
+	return value
 }
