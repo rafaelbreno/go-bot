@@ -2,8 +2,8 @@ package irc
 
 import (
 	"fmt"
+	"go-bot/cmd/app_error"
 	"go-bot/cmd/env"
-	"go-bot/cmd/err"
 	"net"
 )
 
@@ -29,8 +29,6 @@ func GetConn() *Conn {
 	conn := Conn{
 		Env: env.Env{},
 	}
-
-	conn.Env.Err = &err.Err{}
 
 	conn.
 		setCredentials().
@@ -60,7 +58,9 @@ func (c *Conn) setConn() *Conn {
 		Dial(c.Cred.ConnProtocol,
 			fmt.Sprintf("%s:%s", c.Cred.ConnURL, c.Cred.ConnPort))
 
-	c.Env.Err.Log(e)
+	if e != nil {
+		app_error.NewError(e.Error(), "cmd/irc/irc.go:setConn")
+	}
 
 	c.Conn = conn
 
@@ -76,7 +76,7 @@ func (c *Conn) connectIRC() {
 
 func (c *Conn) Disconnect() {
 	if e := c.Conn.Close(); e != nil {
-		c.Env.Err.Log(e)
+		app_error.NewError(e.Error(), "cmd/irc/irc.go:Disconnect")
 	}
 }
 
