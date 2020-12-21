@@ -23,4 +23,6 @@ func Start() {
 	conn := irc.GetConn()
 
 	defer conn.Disconnect()
+
+	irc.Listen(conn.Conn)
 }
