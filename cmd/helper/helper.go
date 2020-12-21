@@ -1,6 +1,7 @@
 package helper
 
 import (
+	"net"
 	"os"
 	"sync"
 )
@@ -20,4 +21,9 @@ func WaitForCtrlC() {
 	}()
 
 	wait.Wait()
+}
+
+func WriteTwitch(msg string, conn net.Conn) {
+	msg += "\r\n"
+	conn.Write([]byte(msg))
 }
