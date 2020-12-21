@@ -1,9 +1,9 @@
 package app
 
 import (
-	"fmt"
 	"go-bot/cmd/env"
 	"go-bot/cmd/err"
+	"go-bot/cmd/irc"
 )
 
 /* App bootstrap struct
@@ -25,7 +25,7 @@ func init() {
 }
 
 func Start() {
-	a := app.Env.Getenv("AABOT_USERNAME")
+	conn := irc.GetConn()
 
-	fmt.Println(a)
+	defer conn.Disconnect()
 }
