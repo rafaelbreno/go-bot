@@ -2,11 +2,13 @@ package env
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"os"
 
-	"github.com/joho/godotenv"
 	"go-bot/cmd/err"
+
+	"github.com/joho/godotenv"
 )
 
 type Env struct {
@@ -24,7 +26,8 @@ func init() {
 func (e *Env) Getenv(key string) string {
 	value := os.Getenv(key)
 	if value == "" {
-		err := errors.New("Key not found")
+		errMsg := fmt.Sprintf(`Key "%s" not found!`, key)
+		err := errors.New(errMsg)
 		e.Err.Log(err)
 	}
 	return value
