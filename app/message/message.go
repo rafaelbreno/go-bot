@@ -16,20 +16,7 @@ const (
 	 * Username
 	**/
 	USERNAMEKEY    = "username"
-	USERNAME1REGEX = `(:)[\w+]{1,}(!)`
-
-	/* Can have N charactes, digits and underscore
-	 * Followed by '@'
-	 * Username
-	**/
-
-	USERNAME2REGEX = `[\w+]{1,}(@)`
-
-	/* Can have N charactes, digits and underscore
-	 * Followed by '.tmi.twitch.tv'
-	 * Username
-	**/
-	USERNAME3REGEX = `[\w+]{1,}(.tmi.twitch.tv)`
+	USERNAME1REGEX = `(:)[\w+]{1,}(!)[\w+]{1,}(@)[\w+]{1,}(.tmi.twitch.tv)`
 
 	/* Can have N charactes, digits and underscore, followed by '#'
 	 * Command
@@ -45,7 +32,7 @@ const (
 
 	// User message
 	MESSAGEKEY   = "message"
-	MESSAGEREGEX = `[\s\S]{1,}`
+	MESSAGEREGEX = `[\w\s\S]{1,}`
 
 	IRCREGEX = `(:)[\w+]{1,}(!)[\w+]{1,}(@)[\w+]{1,}(.tmi.twitch.tv )[\w]{1,}( #)[\w]{1,}( :)[\s\S]{1,}`
 )
@@ -70,10 +57,10 @@ type Steps struct {
 	Key   string
 }
 
-var steps map[int]Steps
+var steps []Steps
 
 func SetSteps() {
-	steps = make(map[int]Steps, 6)
+	steps = make([]Steps, 4)
 
 	steps[0] = Steps{
 		Regex: USERNAME1REGEX,
@@ -81,26 +68,16 @@ func SetSteps() {
 	}
 
 	steps[1] = Steps{
-		Regex: USERNAME2REGEX,
-		Key:   TEMPKEY,
-	}
-
-	steps[2] = Steps{
-		Regex: USERNAME3REGEX,
-		Key:   TEMPKEY,
-	}
-
-	steps[3] = Steps{
 		Regex: COMMANDREGEX,
 		Key:   COMMANDKEY,
 	}
 
-	steps[4] = Steps{
+	steps[2] = Steps{
 		Regex: CHANNELREGEX,
 		Key:   CHANNELKEY,
 	}
 
-	steps[5] = Steps{
+	steps[3] = Steps{
 		Regex: MESSAGEREGEX,
 		Key:   MESSAGEKEY,
 	}
@@ -116,12 +93,11 @@ func ReadAndParse(msg string) {
 		panic(err)
 	}
 
-	//fmt.Println(m.Raw)
-
-	fmt.Println("Channel: ", m.Channel)
-	fmt.Println("Message: ", m.Message)
-	fmt.Println("Command: ", m.Command)
-	fmt.Println("Username: ", m.Username)
+	//fmt.Println("Channel: ", m.Channel)
+	//fmt.Println("Message: ", m.Message)
+	//fmt.Println("Command: ", m.Command)
+	//fmt.Println("Username: ", m.Username)
+	fmt.Printf("%s disse: %s\n\n", m.Username, m.Message)
 }
 
 /*
@@ -134,11 +110,8 @@ func ReadAndParse(msg string) {
  	PING :tmi.twitch.tv
 **/
 
-func (m Message) Parse() error {
-	//fmt.Println("AAAAAAAAAAAAAaaa")
-
+func (m *Message) Parse() error {
 	if ok := regexp.MustCompile(`(PING)`).Match([]byte(m.Raw)); ok {
-		//fmt.Println("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB")
 		m.Twitch = true
 		// Message to continue connected to Twitch's IRC
 		m.Message = "PONG"
@@ -146,29 +119,24 @@ func (m Message) Parse() error {
 	}
 
 	if ok, err := regexp.Match(IRCREGEX, []byte(m.Raw)); !ok || err != nil {
-		//fmt.Println("CCCCCCCCCCCCCCCCCCCCCCCCCCC")
 		fmt.Println("Error: ", err)
 		return err
 	}
 
 	for _, value := range steps {
-		//fmt.Println("DDDDDDDDDDDDDDDDDDDDDDDDD")
 
 		str := regexp.MustCompile(value.Regex).FindString(m.TempRaw)
-
-		fmt.Println(value.Key)
 
 		switch value.Key {
 		case "username":
 			/*
 				:<username>!
 			*/
-			//fmt.Println("Username", str)
-			username := strings.Trim(str, ":")
-			username = strings.Trim(username, "!")
-			m.Username = username
+			m.TempRaw = strings.TrimPrefix(m.TempRaw, str)
 
-			m.TempRaw = strings.Trim(m.TempRaw, str)
+			usernameRaw := strings.Split(str, "!")
+			username := strings.Trim(usernameRaw[0], ":")
+			m.Username = username
 
 			break
 
@@ -176,80 +144,34 @@ func (m Message) Parse() error {
 			/*
 				<COMMAND>
 			*/
-			//fmt.Println("Command", str)
+			m.TempRaw = strings.TrimPrefix(m.TempRaw, str)
 
-			command := strings.Trim(str, " ")
+			command := strings.TrimPrefix(str, " ")
+			command = strings.TrimSuffix(str, " #")
 			m.Command = command
 
-			m.TempRaw = strings.Trim(m.TempRaw, str)
 			break
 
 		case "channel":
 			/*
 				#<CHANNEL>
 			*/
-			//fmt.Println("Channel", str)
+			m.TempRaw = strings.TrimPrefix(m.TempRaw, str)
 
-			channel := strings.Trim(str, "#")
+			channel := strings.Trim(str, ":")
 			channel = strings.Trim(channel, " ")
 			m.Channel = channel
-
-			m.TempRaw = strings.Trim(m.TempRaw, str)
-
 			break
 
 		case "message":
-			//fmt.Println("Message", str)
+			m.TempRaw = strings.TrimPrefix(m.TempRaw, str)
 
-			msg := strings.TrimPrefix(str, ":")
-			m.Message = msg
-
-			m.TempRaw = strings.Trim(m.TempRaw, str)
+			m.Message = str
 			break
 
 		default:
-			/*
-			 *	random
-			**/
-			//fmt.Println("Random", str)
-			m.TempRaw = strings.Trim(m.TempRaw, str)
 			break
 		}
 	}
-
-	//msgREGEX := `` +
-	/* Must start with :
-	 * Can have N charactes, digits and underscore
-	 * Must have one !
-	 * Username
-	**/
-	//`(:)[\w+]{1,}(!)` +
-
-	/* Can have N charactes, digits and underscore
-	 * Followed by '@'
-	 * Username
-	**/
-	//`[\w+]{1,}(@)` +
-
-	/* Can have N charactes, digits and underscore
-	 * Followed by '.tmi.twitch.tv'
-	 * Username
-	**/
-	//`[\w+]{1,}(.tmi.twitch.tv)` +
-
-	/* Can have N charactes, digits and underscore, followed by '#'
-	 * Command
-	**/
-	//`[\w\s]{1,}(#)` +
-
-	/* Can have N charactes, digits and underscore, followed by ':'
-	 * Username
-	**/
-	//`[\w\s]{1,}(:)` +
-	//// User message
-	//`[\s\S]{1,}`
-	//r := regexp.MustCompile(`(:)[\w+]{1,}(!)[\w+]{1,}(@)[\w+]{1,}(.tmi.twitch.tv )[\w]{1,}( #)[\w]{1,}( :)[\s\S]{1,}`)
-	//r := regexp.MustCompile(msgREGEX)
-
 	return nil
 }
