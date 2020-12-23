@@ -2,6 +2,8 @@ package message
 
 import (
 	"fmt"
+	"go-bot/app/command"
+	"net"
 	"regexp"
 	"strings"
 )
@@ -58,8 +60,9 @@ type Steps struct {
 }
 
 var steps []Steps
+var conn net.Conn
 
-func SetSteps() {
+func SetSteps(conn net.Conn) {
 	steps = make([]Steps, 4)
 
 	steps[0] = Steps{
@@ -93,11 +96,22 @@ func ReadAndParse(msg string) {
 		panic(err)
 	}
 
-	//fmt.Println("Channel: ", m.Channel)
-	//fmt.Println("Message: ", m.Message)
-	//fmt.Println("Command: ", m.Command)
-	//fmt.Println("Username: ", m.Username)
 	fmt.Printf("%s disse: %s\n\n", m.Username, m.Message)
+
+	if strings.HasPrefix(m.Message, "!") {
+		comm := command.Message{
+			Channel:  m.Channel,
+			Command:  m.Command,
+			Username: m.Username,
+			Message:  m.Message,
+			Response: command.Response{
+				Body: m.Response.Body,
+			},
+			Twitch: m.Twitch,
+		}
+
+		go command.ChatCommand(comm)
+	}
 }
 
 /*
