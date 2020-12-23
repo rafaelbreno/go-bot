@@ -1,6 +1,7 @@
 package app
 
 import (
+	"go-bot/app/command"
 	"go-bot/cmd/env"
 	"go-bot/cmd/irc"
 )
@@ -21,6 +22,8 @@ func init() {
 
 func Start() {
 	conn := irc.GetConn()
+
+	command.SetCommands(conn.Conn)
 
 	defer conn.Disconnect()
 

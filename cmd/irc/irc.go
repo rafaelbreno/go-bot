@@ -29,7 +29,7 @@ func (i *IRC) Read() {
 			log.Panicln(err.Error())
 		}
 
-		message.SetSteps()
+		message.SetSteps(i.Conn)
 
 		go message.ReadAndParse(msg)
 	}
