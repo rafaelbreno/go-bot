@@ -1,9 +1,13 @@
 package command
 
 import (
+	"encoding/json"
 	"fmt"
 	"go-bot/cmd/helper"
+	"io/ioutil"
+	"log"
 	"net"
+	"os"
 	"strings"
 )
 
@@ -20,23 +24,47 @@ type Response struct {
 	Body string
 }
 
-type Command struct {
-	Trigger  string
-	Response string
+type Commands struct {
+	Commands []Command `json:"commands"`
 }
 
-var commands map[string]Command
+type Command struct {
+	Trigger  string `json:"trigger"`
+	Response string `json:"response"`
+}
+
+var commands Commands
 var conn net.Conn
 
 func SetCommands(c net.Conn) {
 	conn = c
 
-	commands = make(map[string]Command, 10)
+	jsonFile, err := os.Open("db/commands.json")
 
-	commands["!hello"] = Command{
-		Trigger:  "!hello",
-		Response: "Hello __USER__",
+	if err != nil {
+		log.Fatal(err)
 	}
+
+	jsonBytes, err := ioutil.ReadAll(jsonFile)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err = json.Unmarshal(jsonBytes, &commands); err != nil {
+		log.Fatal(err)
+	}
+}
+
+// Refactor
+func findCommand(comm string) (Command, bool) {
+	for _, value := range commands.Commands {
+		if value.Trigger == comm {
+			return value, true
+		}
+	}
+
+	return Command{}, false
 }
 
 func ChatCommand(m Message) {
@@ -44,8 +72,8 @@ func ChatCommand(m Message) {
 
 	fmt.Println("Command found:", c[0])
 
-	if _, found := commands[c[0]]; found {
-		m.sendCommand(commands[c[0]].prepareResponse(m))
+	if comm, found := findCommand(c[0]); found {
+		m.sendCommand(comm.prepareResponse(m))
 	}
 }
 

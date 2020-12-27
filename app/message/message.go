@@ -3,6 +3,7 @@ package message
 import (
 	"fmt"
 	"go-bot/app/command"
+	"go-bot/cmd/helper"
 	"net"
 	"regexp"
 	"strings"
@@ -62,7 +63,9 @@ type Steps struct {
 var steps []Steps
 var conn net.Conn
 
-func SetSteps(conn net.Conn) {
+func SetSteps(c net.Conn) {
+	conn = c
+
 	steps = make([]Steps, 4)
 
 	steps[0] = Steps{
@@ -112,6 +115,12 @@ func ReadAndParse(msg string) {
 
 		go command.ChatCommand(comm)
 	}
+
+	if m.Twitch {
+		go func() {
+			helper.WriteTwitch(m.Message, conn)
+		}()
+	}
 }
 
 /*
@@ -126,6 +135,7 @@ func ReadAndParse(msg string) {
 
 func (m *Message) Parse() error {
 	if ok := regexp.MustCompile(`(PING)`).Match([]byte(m.Raw)); ok {
+		m.Username = "Twitch"
 		m.Twitch = true
 		// Message to continue connected to Twitch's IRC
 		m.Message = "PONG"
