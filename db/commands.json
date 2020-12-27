@@ -1,0 +1,16 @@
+{
+    "commands": [
+        {
+            "trigger": "!hello",
+            "response": "Hello __USER__"
+        },
+        {
+            "trigger": "!github",
+            "response": "__USER__ >>> https://github.com/rafaelbreno"
+        },
+        {
+            "trigger": "!bot",
+            "response": "__USER__ this is my bot: https://github.com/rafaelbreno/go-bot , feel free to clone and PR :)"
+        }
+    ]
+}
