@@ -11,6 +11,16 @@
         {
             "trigger": "!bot",
             "response": "__USER__ this is my bot: https://github.com/rafaelbreno/go-bot , feel free to clone and PR :)"
+        },
+        {
+            "trigger": "!me",
+            "response": "__Sender@Username__ has __Sender@Coins(int)__",
+            "response_": {
+                "Sender": "Who",
+                "Username": "Sender's Username",
+                "Coins": "Sender's Coins",
+                "(int)": "Type"
+            }
         }
     ]
 }
