@@ -3,6 +3,7 @@ package command
 import (
 	"encoding/json"
 	"fmt"
+	"go-bot/app/user"
 	"go-bot/cmd/helper"
 	"io/ioutil"
 	"log"
@@ -68,6 +69,8 @@ func findCommand(comm string) (Command, bool) {
 }
 
 func ChatCommand(m Message) {
+	user.GetUser(m.Username)
+
 	c := strings.SplitN(m.Message, " ", 1)
 
 	fmt.Println("Command found:", c[0])
@@ -89,4 +92,8 @@ func (c Command) prepareResponse(m Message) string {
 	resp = strings.ReplaceAll(resp, "__USER__", "@"+m.Username)
 
 	return resp
+}
+
+func SaveCommands() {
+	log.Println("Commands Saved!")
 }
