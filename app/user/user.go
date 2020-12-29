@@ -2,9 +2,11 @@ package user
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
+	"reflect"
 )
 
 type Users struct {
@@ -45,8 +47,21 @@ func ImportUsers() {
 	}
 }
 
-func GetUser(username string) {
-	log.Println(users[username])
+func GetByTag(username, tag string) (error, string) {
+	user := users[username]
+
+	if user == (User{}) {
+		err := fmt.Errorf("Username %s not found!", username)
+		log.Println(err)
+		return err, ""
+	}
+
+	r := reflect.ValueOf(user)
+	f := reflect.Indirect(r).FieldByName(tag)
+
+	log.Println(f)
+
+	return nil, f.String()
 }
 
 func SaveUsers() {

@@ -69,8 +69,6 @@ func findCommand(comm string) (Command, bool) {
 }
 
 func ChatCommand(m Message) {
-	user.GetUser(m.Username)
-
 	c := strings.SplitN(m.Message, " ", 1)
 
 	fmt.Println("Command found:", c[0])
