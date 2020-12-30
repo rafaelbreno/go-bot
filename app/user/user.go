@@ -15,7 +15,7 @@ type Users struct {
 
 type User struct {
 	Username string `json:"username"`
-	Coins    int    `json:"coins"`
+	Coins    string `json:"coins"`
 	LastSeen string `json:"last_seen"`
 }
 
@@ -47,13 +47,13 @@ func ImportUsers() {
 	}
 }
 
-func GetByTag(username, tag string) (error, string) {
+func GetByTag(username, tag string) (string, error) {
 	user := users[username]
 
 	if user == (User{}) {
 		err := fmt.Errorf("Username %s not found!", username)
 		log.Println(err)
-		return err, ""
+		return "", err
 	}
 
 	r := reflect.ValueOf(user)
@@ -61,7 +61,7 @@ func GetByTag(username, tag string) (error, string) {
 
 	log.Println(f)
 
-	return nil, f.String()
+	return string(f.String()), nil
 }
 
 func SaveUsers() {
