@@ -2,7 +2,7 @@
     "users": [
         {
             "username": "rafiusky",
-            "coins": 200,
+            "coins": "200",
             "last_seen": "2020-12-28"
         }
     ]

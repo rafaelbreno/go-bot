@@ -14,7 +14,7 @@
         },
         {
             "trigger": "!me",
-            "response": "__Sender@Username__ has __Sender@Coins(int)__",
+            "response": "__Sender@Username__ has __Sender@Coins__ coins",
             "response_": {
                 "Sender": "Who",
                 "Username": "Sender's Username",
