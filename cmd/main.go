@@ -46,7 +46,10 @@ func main() {
 	signal.Notify(stop, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
 	// Loading .env file
-	godotenv.Load()
+	if err := godotenv.Load(); err != nil {
+		logger.Error(err.Error())
+		os.Exit(0)
+	}
 
 	<-stop
 }
