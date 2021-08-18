@@ -13,5 +13,5 @@ type Context struct {
 	Logger *zap.Logger
 	// Conn is the connection between the
 	// bot and Twitch's chat
-	Conn *conn.Conn
+	Conn conn.Conn
 }
