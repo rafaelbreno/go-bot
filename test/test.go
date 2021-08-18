@@ -16,24 +16,24 @@ const (
 )
 
 type TestCases struct {
-	name      string
-	want      interface{}
-	got       interface{}
-	regexRule *regexp.Regexp
-	testType  TestType
+	Name      string
+	Want      interface{}
+	Got       interface{}
+	RegexRule *regexp.Regexp
+	TestType  TestType
 }
 
 func RunTests(t *testing.T, tts []TestCases) {
 	for _, tt := range tts {
-		t.Run(tt.name, func(t *testing.T) {
+		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
-			switch tt.testType {
+			switch tt.TestType {
 			case Equal:
-				assert.Equal(t, tt.want, tt.got)
+				assert.Equal(t, tt.Want, tt.Got)
 			case Regex:
-				assert.Regexp(t, tt.regexRule, tt.got)
+				assert.Regexp(t, tt.RegexRule, tt.Got)
 			case Nil:
-				assert.Nil(t, tt.got)
+				assert.Nil(t, tt.Got)
 			default:
 			}
 		})
