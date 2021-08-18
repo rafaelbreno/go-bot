@@ -18,10 +18,10 @@ const (
 // all action related to the
 // connections types
 type Conn interface {
-	FetchAll()
+	Listen()
 }
 
-// FetchAll fetch each message
-func FetchAll(c Conn) {
-	c.FetchAll()
+// Listen fetch each message
+func Listen(c Conn) {
+	c.Listen()
 }
