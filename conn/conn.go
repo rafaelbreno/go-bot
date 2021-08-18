@@ -1,17 +1,12 @@
 package conn
 
-// ConnType is the connection type
-// that will be set between this
-// bot and Twitch
-type ConnType int
+import (
+	"fmt"
+	"strings"
+)
 
 const (
-	// IRCType defines the IRC connection
-	// between the bot and Twitch's chat
-	IRCType ConnType = iota
-	// WSType defines the WebSocket connection
-	// between the bot and Twitch's chat
-	WSType
+	invalidConn = "The connection \"%s\" is invalid"
 )
 
 // Conn interface represents
@@ -19,6 +14,16 @@ const (
 // connections types
 type Conn interface {
 	Listen()
+}
+
+// NewConn return a Conn pointer
+func NewConn(connType *string) (Conn, error) {
+	switch strings.ToUpper(*connType) {
+	case "IRC":
+		return Conn(&IRC{}), nil
+	default:
+		return *new(Conn), fmt.Errorf(invalidConn, *connType)
+	}
 }
 
 // Listen fetch each message
