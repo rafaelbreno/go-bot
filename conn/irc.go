@@ -1,8 +1,10 @@
 package conn
 
 import (
+	"bufio"
 	"fmt"
 	"net"
+	"net/textproto"
 	"os"
 
 	"github.com/rafaelbreno/go-bot/internal"
@@ -43,7 +45,18 @@ func NewIRC(ctx *internal.Context) (*IRC, error) {
 // Listen start listen IRC
 // channel
 func (i *IRC) Listen() {
+	tp := textproto.NewReader(bufio.NewReader(*i.conn))
 
+	go func() {
+		for {
+			status, err := tp.ReadLine()
+			if err != nil {
+				i.ctx.Logger.Error(err.Error())
+			}
+
+			fmt.Println(status)
+		}
+	}()
 }
 
 // GetConn start listen IRC

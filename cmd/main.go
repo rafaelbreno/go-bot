@@ -1,10 +1,7 @@
 package main
 
 import (
-	"bufio"
 	"flag"
-	"fmt"
-	"net/textproto"
 	"os"
 	"os/signal"
 	"syscall"
@@ -57,18 +54,7 @@ func main() {
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
-	tp := textproto.NewReader(bufio.NewReader(*connection.GetConn()))
-
-	go func() {
-		for {
-			status, err := tp.ReadLine()
-			if err != nil {
-				logger.Error(err.Error())
-			}
-
-			fmt.Println(status)
-		}
-	}()
+	conn.Listen(connection)
 
 	<-stop
 }
