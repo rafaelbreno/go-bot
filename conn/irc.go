@@ -18,8 +18,9 @@ const (
 // and actions related to IRC
 // connection
 type IRC struct {
-	conn *net.Conn
+	conn net.Conn
 	ctx  *internal.Context
+	tp   *textproto.Reader
 }
 
 // NewIRC returns a IRC
@@ -37,7 +38,7 @@ func NewIRC(ctx *internal.Context) (*IRC, error) {
 	}
 
 	return &IRC{
-		conn: &conn,
+		conn: conn,
 		ctx:  ctx,
 	}, nil
 }
@@ -45,23 +46,31 @@ func NewIRC(ctx *internal.Context) (*IRC, error) {
 // Listen start listen IRC
 // channel
 func (i *IRC) Listen() {
-	tp := textproto.NewReader(bufio.NewReader(*i.conn))
+	i.connect()
+
+	i.tp = textproto.NewReader(bufio.NewReader(i.conn))
 
 	go func() {
 		for {
-			status, err := tp.ReadLine()
+			msg, err := i.tp.ReadLine()
 			if err != nil {
 				i.ctx.Logger.Error(err.Error())
+				os.Exit(0)
 			}
-
-			fmt.Println(status)
+			fmt.Println(msg)
 		}
 	}()
 }
 
+func (i *IRC) connect() {
+	fmt.Fprintf(i.conn, "PASS %s\r\n", os.Getenv("BOT_OAUTH_TOKEN"))
+	fmt.Fprintf(i.conn, "NICK %s\r\n", os.Getenv("BOT_USERNAME"))
+	fmt.Fprintf(i.conn, "JOIN #%s\r\n", os.Getenv("CHANNEL_NAME"))
+}
+
 // GetConn start listen IRC
 // channel
-func (i *IRC) GetConn() *net.Conn {
+func (i *IRC) GetConn() net.Conn {
 	return i.conn
 }
 
@@ -69,4 +78,14 @@ func (i *IRC) GetConn() *net.Conn {
 // channel
 func (i *IRC) Ctx() *internal.Context {
 	return i.ctx
+}
+
+// Close ends IRC connection
+func (i *IRC) Close() {
+	i.ctx.Logger.Info("Closing IRC connection")
+	if err := i.conn.Close(); err != nil {
+		i.ctx.Logger.Error(err.Error())
+		os.Exit(0)
+	}
+	i.ctx.Logger.Info("IRC connection closed")
 }

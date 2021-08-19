@@ -17,8 +17,9 @@ const (
 // connections types
 type Conn interface {
 	Listen()
-	GetConn() *net.Conn
+	GetConn() net.Conn
 	Ctx() *internal.Context
+	Close()
 }
 
 // NewConn return a Conn pointer
@@ -39,6 +40,10 @@ func Listen(c Conn) {
 }
 
 // GetConn a
-func GetConn(c Conn) *net.Conn {
+func GetConn(c Conn) net.Conn {
 	return c.GetConn()
+}
+
+func Close(c Conn) {
+	c.Close()
 }

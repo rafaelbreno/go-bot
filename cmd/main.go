@@ -56,5 +56,9 @@ func main() {
 
 	conn.Listen(connection)
 
+	defer conn.Close(connection)
+
 	<-stop
+
+	logger.Info("Gracefully terminating bot")
 }
