@@ -6,6 +6,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/rafaelbreno/go-bot/internal"
 	"github.com/rafaelbreno/go-bot/test"
 )
 
@@ -15,7 +16,7 @@ func TestIRC(t *testing.T) {
 	{
 		os.Setenv("IRC_URL", "irc://irc.chat.twitch.tv")
 		os.Setenv("IRC_PORT", "6667")
-		conn, err := NewIRC()
+		conn, err := NewIRC(&internal.Context{})
 		connWant, _ := net.Dial("tcp", fmt.Sprintf(ircConnURL, os.Getenv("IRC_URL"), os.Getenv("IRC_PORT")))
 		tts = append(tts, test.TestCases{
 			Name:     "NewIRC OK - IRC",
@@ -33,7 +34,7 @@ func TestIRC(t *testing.T) {
 	{
 		os.Setenv("IRC_URL", "some_random_url")
 		os.Setenv("IRC_PORT", "not_even_a_port")
-		conn, err := NewIRC()
+		conn, err := NewIRC(&internal.Context{})
 		_, errWant := net.Dial("tcp", fmt.Sprintf(ircConnURL, os.Getenv("IRC_URL"), os.Getenv("IRC_PORT")))
 		tts = append(tts, test.TestCases{
 			Name:     "NewIRC OK - IRC",
