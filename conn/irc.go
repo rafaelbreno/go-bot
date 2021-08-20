@@ -6,6 +6,7 @@ import (
 	"net"
 	"net/textproto"
 	"os"
+	"time"
 
 	"github.com/rafaelbreno/go-bot/internal"
 )
@@ -31,16 +32,24 @@ func NewIRC(ctx *internal.Context) (*IRC, error) {
 
 	fmt.Println(connStr)
 
-	conn, err := net.Dial("tcp", connStr)
+	var c net.Conn
+	var err error
 
-	if err != nil {
-		return &IRC{}, err
+	for tries := 1; tries <= 3; tries++ {
+		c, err = net.Dial("tcp", connStr)
+		if err == nil {
+			break
+		}
+		errMsg := fmt.Sprintf("Error %s. Try number %d!", err.Error(), tries)
+		ctx.Logger.Error(errMsg)
+		c.Close()
+		time.Sleep(2 * time.Second)
 	}
 
 	return &IRC{
-		conn: conn,
+		conn: c,
 		ctx:  ctx,
-	}, nil
+	}, err
 }
 
 // Listen start listen IRC

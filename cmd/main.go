@@ -47,12 +47,13 @@ func init() {
 		Logger: logger,
 	}
 
-	connection = newConnection()
 }
 
 func main() {
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+
+	connection = newConnection()
 
 	conn.Listen(connection)
 
