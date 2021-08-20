@@ -7,6 +7,7 @@ import (
 	"syscall"
 
 	"github.com/joho/godotenv"
+	"github.com/rafaelbreno/go-bot/bot"
 	"github.com/rafaelbreno/go-bot/conn"
 	"github.com/rafaelbreno/go-bot/internal"
 	"go.uber.org/zap"
@@ -14,7 +15,7 @@ import (
 
 var (
 	connType   *string
-	connection conn.Conn
+	connection *conn.IRC
 	ctx        *internal.Context
 	logger     *zap.Logger
 )
@@ -23,8 +24,8 @@ func newLogger() {
 	logger, _ = zap.NewProduction()
 }
 
-func newConnection() conn.Conn {
-	c, err := conn.NewConn(connType, ctx)
+func newConnection() *conn.IRC {
+	c, err := conn.NewIRC(ctx)
 	if err != nil {
 		logger.Error(err.Error())
 		os.Exit(0)
@@ -55,9 +56,9 @@ func main() {
 
 	connection = newConnection()
 
-	conn.Listen(connection)
+	go bot.Start(ctx, connection)
 
-	defer conn.Close(connection)
+	defer connection.Close()
 
 	<-stop
 
