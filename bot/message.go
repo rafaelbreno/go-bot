@@ -17,16 +17,10 @@ const (
 	Nil MsgType = iota
 	// Twitch 's communications
 	Twitch
-	// User is the common user
-	User
-	// VIP is the user vip
-	VIP
-	// MOD is the moderator
-	MOD
-	// Streamer is the streamer
-	Streamer
 	// Ping to shakehands with Twitch
 	Ping
+	// Command is prefixed by exclamation mark !
+	Command
 )
 
 type Parser struct {
@@ -72,9 +66,9 @@ func (p *Parser) ParseMsg(msgStr string) *Message {
 		}
 	}
 
-	sentMessage := p.MessageRegex.FindString(msgStr)
-	sentBy := p.UserRegex.Find([]byte(msgStr))
-	lenSentBy := len(sentBy)
+	sentMessageRaw := p.MessageRegex.FindString(msgStr)
+	sentByRaw := p.UserRegex.Find([]byte(msgStr))
+	lenSentBy := len(sentByRaw)
 
 	if lenSentBy == 0 {
 		return &Message{
@@ -82,8 +76,18 @@ func (p *Parser) ParseMsg(msgStr string) *Message {
 		}
 	}
 
+	sentMessage := strings.TrimPrefix(sentMessageRaw, "#rafiusky :")
+	sentBy := string(sentByRaw[1 : lenSentBy-1])
+
+	if !strings.HasPrefix(sentMessage, "!") {
+		return &Message{
+			Type: Nil,
+		}
+	}
+
 	return &Message{
-		SentMessage: strings.TrimPrefix(sentMessage, "#rafiusky :"),
-		SentBy:      string(sentBy[1 : lenSentBy-1]),
+		Type:        Command,
+		SentMessage: sentMessage,
+		SentBy:      sentBy,
 	}
 }

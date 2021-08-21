@@ -51,5 +51,7 @@ func (b *Bootstrap) Do(msg *Message) {
 	case Ping:
 		utils.Write(b.Ctx, b.IRC.Conn, "PONG")
 		break
+	case Command:
+		break
 	}
 }
