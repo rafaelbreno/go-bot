@@ -13,8 +13,10 @@ import (
 type MsgType int
 
 const (
+	// Nil takes no action
+	Nil MsgType = iota
 	// Twitch 's communications
-	Twitch MsgType = iota
+	Twitch
 	// User is the common user
 	User
 	// VIP is the user vip
@@ -23,6 +25,8 @@ const (
 	MOD
 	// Streamer is the streamer
 	Streamer
+	// Ping to shakehands with Twitch
+	Ping
 )
 
 type Parser struct {
@@ -46,7 +50,6 @@ func NewParser(ctx *internal.Context) *Parser {
 // Message stores all information related
 // to a sent message
 type Message struct {
-	RawMessage  string
 	Type        MsgType
 	SentBy      string
 	SentMessage string
@@ -54,23 +57,33 @@ type Message struct {
 
 // ParseMsg a string into a
 // Message struct
-func (p *Parser) ParseMsg(msgStr string) {
+func (p *Parser) ParseMsg(msgStr string) *Message {
 	fmt.Println(msgStr)
+
+	if strings.HasPrefix(msgStr, "PING") {
+		p.Ctx.Logger.Info("Received ping")
+		return &Message{
+			Type: Ping,
+		}
+	}
+	if strings.HasPrefix(msgStr, ":tmi.twitch.tv") {
+		return &Message{
+			Type: Nil,
+		}
+	}
 
 	sentMessage := p.MessageRegex.FindString(msgStr)
 	sentBy := p.UserRegex.Find([]byte(msgStr))
 	lenSentBy := len(sentBy)
 
 	if lenSentBy == 0 {
-		return
+		return &Message{
+			Type: Nil,
+		}
 	}
 
-	msg := Message{
-		RawMessage:  msgStr,
+	return &Message{
 		SentMessage: strings.TrimPrefix(sentMessage, "#rafiusky :"),
 		SentBy:      string(sentBy[1 : lenSentBy-1]),
 	}
-
-	fmt.Printf("SentBy %s\n", msg.SentBy)
-	fmt.Printf("SentMessage %s\n", msg.SentMessage)
 }

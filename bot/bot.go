@@ -4,6 +4,7 @@ import (
 	"github.com/rafaelbreno/go-bot/command"
 	"github.com/rafaelbreno/go-bot/conn"
 	"github.com/rafaelbreno/go-bot/internal"
+	"github.com/rafaelbreno/go-bot/utils"
 )
 
 // Bootstrap manages all actions
@@ -37,8 +38,18 @@ func (b *Bootstrap) ReceiveMsg() {
 	p := NewParser(b.Ctx)
 	for {
 		select {
-		case msg := <-ch:
-			p.ParseMsg(msg)
+		case msgStr := <-ch:
+			b.Do(p.ParseMsg(msgStr))
 		}
+	}
+}
+
+func (b *Bootstrap) Do(msg *Message) {
+	switch msg.Type {
+	case Nil:
+		break
+	case Ping:
+		utils.Write(b.Ctx, b.IRC.Conn, "PONG")
+		break
 	}
 }
