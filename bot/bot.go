@@ -1,6 +1,8 @@
 package bot
 
 import (
+	"fmt"
+
 	"github.com/rafaelbreno/go-bot/command"
 	"github.com/rafaelbreno/go-bot/conn"
 	"github.com/rafaelbreno/go-bot/internal"
@@ -12,7 +14,7 @@ import (
 type Bootstrap struct {
 	Ctx     *internal.Context
 	IRC     *conn.IRC
-	Command *command.Command
+	Command *command.CommandCtx
 }
 
 var b *Bootstrap
@@ -25,26 +27,30 @@ func Start(ctx *internal.Context, irc *conn.IRC) {
 	b = &Bootstrap{
 		Ctx: ctx,
 		IRC: irc,
+		Command: &command.CommandCtx{
+			Ctx: ctx,
+		},
 	}
 	b.Ctx.Logger.Info("Start bot")
 
 	go b.IRC.Listen(ch)
-	b.ReceiveMsg()
+	b.receiveMsg()
 }
 
-// ReceiveMsg aa
-func (b *Bootstrap) ReceiveMsg() {
+func (b *Bootstrap) receiveMsg() {
 	b.Ctx.Logger.Info("Start parser")
 	p := NewParser(b.Ctx)
 	for {
 		select {
 		case msgStr := <-ch:
-			b.Do(p.ParseMsg(msgStr))
+			msg := p.ParseMsg(msgStr)
+			msg.Ctx = b.Ctx
+			b.do(msg)
 		}
 	}
 }
 
-func (b *Bootstrap) Do(msg *Message) {
+func (b *Bootstrap) do(msg *Message) {
 	switch msg.Type {
 	case Nil:
 		break
@@ -52,6 +58,7 @@ func (b *Bootstrap) Do(msg *Message) {
 		utils.Write(b.Ctx, b.IRC.Conn, "PONG")
 		break
 	case Command:
+		utils.Write(b.Ctx, b.IRC.Conn, fmt.Sprintf("PRIVMSG #%s :%s", b.Ctx.ChannelName, msg.getString()))
 		break
 	}
 }
