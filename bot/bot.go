@@ -1,8 +1,6 @@
 package bot
 
 import (
-	"fmt"
-
 	"github.com/rafaelbreno/go-bot/command"
 	"github.com/rafaelbreno/go-bot/conn"
 	"github.com/rafaelbreno/go-bot/internal"
@@ -30,16 +28,17 @@ func Start(ctx *internal.Context, irc *conn.IRC) {
 	b.Ctx.Logger.Info("Start bot")
 
 	go b.IRC.Listen(ch)
-	b.ParseMsg()
+	b.ReceiveMsg()
 }
 
-// ParseMsg aa
-func (b *Bootstrap) ParseMsg() {
+// ReceiveMsg aa
+func (b *Bootstrap) ReceiveMsg() {
 	b.Ctx.Logger.Info("Start parser")
+	p := NewParser(b.Ctx)
 	for {
 		select {
 		case msg := <-ch:
-			fmt.Println(msg)
+			p.ParseMsg(msg)
 		}
 	}
 }
