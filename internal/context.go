@@ -9,5 +9,8 @@ import (
 type Context struct {
 	// Logger access a logging package
 	// to log all action inside the bot
-	Logger *zap.Logger
+	Logger      *zap.Logger
+	ChannelName string
+	OAuthToken  string
+	BotName     string
 }
