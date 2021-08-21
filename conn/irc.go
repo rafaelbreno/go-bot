@@ -75,9 +75,9 @@ func (i *IRC) connect() {
 		time.Sleep(2 * time.Second)
 	}
 
-	fmt.Fprintf(i.Conn, "PASS %s\r\n", os.Getenv("BOT_OAUTH_TOKEN"))
-	fmt.Fprintf(i.Conn, "NICK %s\r\n", os.Getenv("BOT_USERNAME"))
-	fmt.Fprintf(i.Conn, "JOIN #%s\r\n", os.Getenv("CHANNEL_NAME"))
+	fmt.Fprintf(i.Conn, "PASS %s\r\n", i.Ctx.OAuthToken)
+	fmt.Fprintf(i.Conn, "NICK %s\r\n", i.Ctx.BotName)
+	fmt.Fprintf(i.Conn, "JOIN #%s\r\n", i.Ctx.ChannelName)
 
 	i.TP = textproto.NewReader(bufio.NewReader(i.Conn))
 	i.Msg = make(chan string, 1)
