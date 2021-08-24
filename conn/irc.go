@@ -58,8 +58,6 @@ func (i *IRC) Listen(ch chan string) {
 func (i *IRC) connect() {
 	connStr := fmt.Sprintf(ircConnURL, os.Getenv("IRC_URL"), os.Getenv("IRC_PORT"))
 
-	fmt.Println(connStr)
-
 	var c net.Conn
 	var err error
 
@@ -75,9 +73,23 @@ func (i *IRC) connect() {
 		time.Sleep(2 * time.Second)
 	}
 
-	fmt.Fprintf(i.Conn, "PASS %s\r\n", i.Ctx.OAuthToken)
-	fmt.Fprintf(i.Conn, "NICK %s\r\n", i.Ctx.BotName)
-	fmt.Fprintf(i.Conn, "JOIN #%s\r\n", i.Ctx.ChannelName)
+	pass := fmt.Sprintf("PASS %s\r\n", i.Ctx.OAuthToken)
+	if _, err := fmt.Fprint(i.Conn, pass); err != nil {
+		i.Ctx.Logger.Error(err.Error())
+		os.Exit(0)
+	}
+	nick := fmt.Sprintf("NICK %s\r\n", i.Ctx.BotName)
+	if _, err := fmt.Fprint(i.Conn, nick); err != nil {
+		i.Ctx.Logger.Error(err.Error())
+		os.Exit(0)
+	}
+	i.Ctx.Logger.Info(nick)
+	join := fmt.Sprintf("JOIN #%s\r\n", i.Ctx.ChannelName)
+	if _, err := fmt.Fprint(i.Conn, join); err != nil {
+		i.Ctx.Logger.Error(err.Error())
+		os.Exit(0)
+	}
+	i.Ctx.Logger.Info(join)
 
 	i.TP = textproto.NewReader(bufio.NewReader(i.Conn))
 	i.Msg = make(chan string, 1)
