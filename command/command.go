@@ -69,8 +69,6 @@ func (c *CommandCtx) GetAnswer(sentBy, inMessage string) string {
 
 type keyMap map[string]string
 
-var modBlacklist = []string{"nightbot", "streamelements", "anotherttvviewer", "creatisbot", "streamholics", "Federicofeliny"}
-
 func (c *Command) prepare(act *Action) string {
 	rand.Seed(time.Now().Unix())
 
@@ -92,16 +90,9 @@ func (c *Command) prepare(act *Action) string {
 		})
 	case Cupido:
 		ans := ""
-		switch act.SentBy {
-		case "lajurubeba":
-			ans = "rafiusky"
-		case "rafiusky":
-			ans = "lajurubeba"
-		case "carrinheiro":
-			ans = "Angelina"
-		case "johncharlesps":
-			ans = "00bex"
-		default:
+		if val, ok := cupidPair[act.SentBy]; ok {
+			ans = val
+		} else {
 			ans = random(H.fetchUserList(), append(modBlacklist, "lajurubeba", "rafiusky", "rafiuskybot", act.SentBy)...)
 		}
 		return replace(c.Answer, keyMap{
