@@ -15,14 +15,18 @@ type Parser struct {
 
 	// MessageRegex retrieves user's message
 	MessageRegex *regexp.Regexp
+
+	channelPrefix string
 }
 
 func NewParser(ctx *internal.Context) *Parser {
 	msgRegexStr := fmt.Sprintf(`(#%s :).{1,}$`, ctx.ChannelName)
+	ctx.Logger.Info("Initialzied parser")
 	return &Parser{
-		Ctx:          ctx,
-		UserRegex:    regexp.MustCompile(`^(:)[a-zA-Z0-9_]{1,}(!)`),
-		MessageRegex: regexp.MustCompile(msgRegexStr),
+		Ctx:           ctx,
+		UserRegex:     regexp.MustCompile(`^(:)[a-zA-Z0-9_]{1,}(!)`),
+		MessageRegex:  regexp.MustCompile(msgRegexStr),
+		channelPrefix: fmt.Sprintf("#%s :", ctx.ChannelName),
 	}
 }
 
@@ -48,12 +52,13 @@ func (p *Parser) ParseMsg(msgStr string) *Message {
 	lenSentBy := len(sentByRaw)
 
 	if lenSentBy == 0 {
+		p.Ctx.Logger.Info("lenSentBy = 0")
 		return &Message{
 			Type: Nil,
 		}
 	}
 
-	sentMessage := strings.TrimPrefix(sentMessageRaw, "#rafiusky :")
+	sentMessage := strings.TrimPrefix(sentMessageRaw, p.channelPrefix)
 	sentBy := string(sentByRaw[1 : lenSentBy-1])
 
 	if !strings.HasPrefix(sentMessage, "!") {
