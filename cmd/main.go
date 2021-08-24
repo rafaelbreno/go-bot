@@ -42,6 +42,7 @@ func init() {
 		logger.Error(err.Error())
 		os.Exit(0)
 	}
+
 	connType = flag.String("conn", "IRC", "Connection type to Twitch's Chat (IRC ou WS)")
 
 	ctx = &internal.Context{
@@ -50,7 +51,6 @@ func init() {
 		BotName:     os.Getenv("BOT_USERNAME"),
 		OAuthToken:  os.Getenv("BOT_OAUTH_TOKEN"),
 	}
-
 }
 
 func main() {

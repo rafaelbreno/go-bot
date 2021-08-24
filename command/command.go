@@ -1,11 +1,8 @@
 package command
 
 import (
-	"encoding/json"
 	"math/rand"
-	"net/http"
 	"regexp"
-	"strings"
 	"time"
 
 	"github.com/rafaelbreno/go-bot/internal"
@@ -38,13 +35,13 @@ var commands = map[string]Command{
 	"!signo": {
 		Key:     "!signo",
 		Type:    Random,
-		Answer:  "Seu novo signo {answer}",
-		Options: []string{"Capricórnio", "Sagitário", "Escorpião", "Leão", "batata", "cadeira de massagem", "brownie de feijão", "chuveiro frio", "carioca"},
+		Answer:  "/me {user} decidiu trocar de signo, agora seu novo signo é: {answer}",
+		Options: []string{"batata", "cadeira de massagem ", "brownie de feijão", "chuveiro frio", "carioca"},
 	},
 	"!cupido": {
 		Key:    "!cupido",
 		Type:   Cupido,
-		Answer: "Sua alma gêmea é: @{user_list}",
+		Answer: "/me {user} sua alma gêmea é: @{user_list}",
 	},
 }
 
@@ -72,6 +69,8 @@ func (c *CommandCtx) GetAnswer(sentBy, inMessage string) string {
 
 type keyMap map[string]string
 
+var modBlacklist = []string{"nightbot", "streamelements", "anotherttvviewer", "creatisbot", "streamholics", "Federicofeliny"}
+
 func (c *Command) prepare(act *Action) string {
 	rand.Seed(time.Now().Unix())
 
@@ -83,10 +82,12 @@ func (c *Command) prepare(act *Action) string {
 	case Random:
 		if act.SentBy == "rafiusky" {
 			return replace(c.Answer, keyMap{
+				"{user}":   act.SentBy,
 				"{answer}": "O Glorioso",
 			})
 		}
 		return replace(c.Answer, keyMap{
+			"{user}":   act.SentBy,
 			"{answer}": random(c.Options),
 		})
 	case Cupido:
@@ -96,47 +97,18 @@ func (c *Command) prepare(act *Action) string {
 			ans = "rafiusky"
 		case "rafiusky":
 			ans = "lajurubeba"
+		case "carrinheiro":
+			ans = "Angelina"
+		case "johncharlesps":
+			ans = "00bex"
 		default:
-			ans = random(fetchUserList())
+			ans = random(H.fetchUserList(), append(modBlacklist, "lajurubeba", "rafiusky", "rafiuskybot", act.SentBy)...)
 		}
 		return replace(c.Answer, keyMap{
+			"{user}":      act.SentBy,
 			"{user_list}": ans,
 		})
 	default:
 		return ""
 	}
-}
-
-type TMIViewers struct {
-	Chatters struct {
-		Broadcaster []string `json:"broadcaster"`
-		Vips        []string `json:"vips"`
-		Moderators  []string `json:"moderators"`
-		Viewers     []string `json:"viewers"`
-	} `json:"chatters"`
-}
-
-func fetchUserList() []string {
-	v := TMIViewers{}
-	resp, _ := http.Get("https://tmi.twitch.tv/group/user/rafiusky/chatters")
-	_ = json.NewDecoder(resp.Body).Decode(&v)
-
-	var list []string
-	list = append(list, v.Chatters.Broadcaster...)
-	list = append(list, v.Chatters.Viewers...)
-	list = append(list, v.Chatters.Vips...)
-	list = append(list, v.Chatters.Moderators...)
-	return list
-}
-
-func random(list []string) string {
-	rand.Seed(time.Now().Unix())
-	return list[rand.Intn(len(list))]
-}
-
-func replace(str string, repMap keyMap) string {
-	for key, val := range repMap {
-		str = strings.ReplaceAll(str, key, val)
-	}
-	return str
 }
