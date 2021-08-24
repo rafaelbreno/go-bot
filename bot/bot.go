@@ -22,6 +22,9 @@ var ch chan string
 
 // Start ignites the bot
 func Start(ctx *internal.Context, irc *conn.IRC) {
+
+	command.H = command.NewCMDHelper(ctx)
+
 	ch = make(chan string, 1)
 
 	b = &Bootstrap{
@@ -58,7 +61,9 @@ func (b *Bootstrap) do(msg *Message) {
 		utils.Write(b.Ctx, b.IRC.Conn, "PONG")
 		break
 	case Command:
-		utils.Write(b.Ctx, b.IRC.Conn, fmt.Sprintf("PRIVMSG #%s :%s", b.Ctx.ChannelName, msg.getString()))
+		msgStr := fmt.Sprintf("PRIVMSG #%s :%s", b.Ctx.ChannelName, msg.getString())
+		b.Ctx.Logger.Info(msgStr)
+		utils.Write(b.Ctx, b.IRC.Conn, msgStr)
 		break
 	}
 }
