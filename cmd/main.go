@@ -42,11 +42,8 @@ func init() {
 	loadEnv = flag.String("env", "", "If will load .env file")
 
 	// Loading .env file
-	if *loadEnv == "" {
-		if err := godotenv.Load(); err != nil {
-			logger.Error(err.Error())
-			os.Exit(0)
-		}
+	if err := godotenv.Load(); err != nil {
+		logger.Error(err.Error())
 	}
 
 	ctx = &internal.Context{
