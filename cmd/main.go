@@ -4,6 +4,7 @@ import (
 	"flag"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 
 	"github.com/joho/godotenv"
@@ -47,10 +48,10 @@ func init() {
 	}
 
 	ctx = &internal.Context{
-		Logger:      logger,
-		ChannelName: os.Getenv("CHANNEL_NAME"),
-		BotName:     os.Getenv("BOT_USERNAME"),
-		OAuthToken:  os.Getenv("BOT_OAUTH_TOKEN"),
+		Logger:     logger,
+		Channels:   strings.Split(os.Getenv("CHANNEL_NAME"), ","),
+		BotName:    os.Getenv("BOT_USERNAME"),
+		OAuthToken: os.Getenv("BOT_OAUTH_TOKEN"),
 	}
 }
 
