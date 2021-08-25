@@ -1,5 +1,6 @@
 module github.com/rafaelbreno/go-bot
 
+// +heroku goVersion go1.16
 go 1.16
 
 require (
