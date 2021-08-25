@@ -69,7 +69,6 @@ func (i *IRC) connect() {
 		}
 		errMsg := fmt.Sprintf("Error %s. Try number %d!", err.Error(), tries)
 		i.Ctx.Logger.Error(errMsg)
-		c.Close()
 		time.Sleep(2 * time.Second)
 	}
 
