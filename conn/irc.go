@@ -61,15 +61,23 @@ func (i *IRC) connect() {
 	var c net.Conn
 	var err error
 
+	connected := false
+
 	for tries := 1; tries <= 3; tries++ {
 		c, err = net.Dial("tcp", connStr)
 		if err == nil {
 			i.Conn = c
+			connected = true
 			break
 		}
 		errMsg := fmt.Sprintf("Error %s. Try number %d!", err.Error(), tries)
 		i.Ctx.Logger.Error(errMsg)
 		time.Sleep(2 * time.Second)
+	}
+
+	if !connected {
+		i.Ctx.Logger.Error("Unable to connect to IRC")
+		os.Exit(0)
 	}
 
 	pass := fmt.Sprintf("PASS %s\r\n", i.Ctx.OAuthToken)
