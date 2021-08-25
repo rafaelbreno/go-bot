@@ -15,6 +15,7 @@ import (
 
 var (
 	connType   *string
+	loadEnv    *bool
 	connection *conn.IRC
 	ctx        *internal.Context
 	logger     *zap.Logger
@@ -37,13 +38,16 @@ func newConnection() *conn.IRC {
 func init() {
 	newLogger()
 
-	// Loading .env file
-	if err := godotenv.Load(); err != nil {
-		logger.Error(err.Error())
-		os.Exit(0)
-	}
-
 	connType = flag.String("conn", "IRC", "Connection type to Twitch's Chat (IRC ou WS)")
+	loadEnv = flag.Bool("env", true, "If will load .env file")
+
+	// Loading .env file
+	if *loadEnv {
+		if err := godotenv.Load(); err != nil {
+			logger.Error(err.Error())
+			os.Exit(0)
+		}
+	}
 
 	ctx = &internal.Context{
 		Logger:      logger,
