@@ -36,7 +36,7 @@ var commands = map[string]Command{
 		Key:     "!signo",
 		Type:    Random,
 		Answer:  "/me {user} decidiu trocar de signo, agora seu novo signo é: {answer}",
-		Options: []string{"batata", "cadeira de massagem ", "brownie de feijão", "chuveiro frio", "carioca"},
+		Options: lstSigno,
 	},
 	"!cupido": {
 		Key:    "!cupido",
@@ -82,6 +82,12 @@ func (c *Command) prepare(act *Action) string {
 			return replace(c.Answer, keyMap{
 				"{user}":   act.SentBy,
 				"{answer}": "O Glorioso",
+			})
+		}
+		if act.SentBy == "lajurubeba" {
+			return replace(c.Answer, keyMap{
+				"{user}":   act.SentBy,
+				"{answer}": "espirro de loli",
 			})
 		}
 		return replace(c.Answer, keyMap{
