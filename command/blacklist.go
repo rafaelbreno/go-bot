@@ -11,4 +11,5 @@ var cupidPair = map[string]string{
 	"lajurubeba":    "rafiusky",
 	"carrinheiro":   "Angelina",
 	"johncharlesps": "00bex",
+	"keshinho1":     "iziph",
 }
