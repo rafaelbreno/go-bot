@@ -3,14 +3,15 @@ version: "3"
 services:
   api:
     build:
-      context: .
-      dockerfile: ./.docker/golang/Dockerfile
+      context: services/api/
+      dockerfile: ../../.docker/golang/Dockerfile
     ports:
       - "8070:8070"
-    image: "api"
-    container_name: "api"
+    image: "bot_api"
+    container_name: "bot_api"
     environment:
       - CHANNEL_NAME=${API_CHANNEL_NAME}
       - BOT_OAUTH_TOKEN=${API_BOT_OAUTH_TOKEN}
+      - BOT_USERNAME=${API_BOT_USERNAME}
       - IRC_URL=${API_IRC_URL}
       - IRC_PORT=${API_IRC_PORT}
