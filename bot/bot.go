@@ -15,29 +15,28 @@ type Bootstrap struct {
 	Ctx     *internal.Context
 	IRC     *conn.IRC
 	Command *command.CommandCtx
+	MsgChan chan string
 }
-
-var b *Bootstrap
-var ch chan string
 
 // Start ignites the bot
 func Start(ctx *internal.Context, irc *conn.IRC) {
 
 	command.H = command.NewCMDHelper(ctx)
 
-	ch = make(chan string, 1)
+	ch := make(chan string, 1)
 
-	b = &Bootstrap{
+	b := &Bootstrap{
 		Ctx: ctx,
 		IRC: irc,
 		Command: &command.CommandCtx{
 			Ctx: ctx,
 		},
+		MsgChan: ch,
 	}
 	b.Ctx.Logger.Info("Start bot")
 
 	go b.IRC.Listen(ch)
-	b.receiveMsg()
+	go b.receiveMsg()
 }
 
 func (b *Bootstrap) receiveMsg() {
@@ -45,7 +44,7 @@ func (b *Bootstrap) receiveMsg() {
 	p := NewParser(b.Ctx)
 	for {
 		select {
-		case msgStr := <-ch:
+		case msgStr := <-b.MsgChan:
 			msg := p.ParseMsg(msgStr)
 			msg.Ctx = b.Ctx
 			b.do(msg)
@@ -61,7 +60,7 @@ func (b *Bootstrap) do(msg *Message) {
 		utils.Write(b.Ctx, b.IRC.Conn, "PONG")
 		break
 	case Command:
-		msgStr := fmt.Sprintf("PRIVMSG #%s :%s", b.Ctx.ChannelName, msg.getString())
+		msgStr := fmt.Sprintf("PRIVMSG #%s :%s", b.Ctx.ChannelName, msg.getString(b))
 		b.Ctx.Logger.Info(msgStr)
 		utils.Write(b.Ctx, b.IRC.Conn, msgStr)
 		break
