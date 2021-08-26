@@ -18,7 +18,7 @@ type Context struct {
 // WriteContexts returns multiples contexts,
 // each for one different channels
 func WriteContexts(l *zap.Logger, authToken, botName string, channels []string) map[string]*Context {
-	var chs map[string]*Context
+	chs := map[string]*Context{}
 
 	for _, channel := range channels {
 		if _, ok := chs[channel]; !ok {
