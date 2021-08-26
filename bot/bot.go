@@ -33,6 +33,7 @@ func Start(ctx *internal.Context, irc *conn.IRC) {
 		},
 		MsgChan: ch,
 	}
+
 	b.Ctx.Logger.Info("Start bot")
 
 	go b.IRC.Listen(ch)
