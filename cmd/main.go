@@ -4,6 +4,7 @@ import (
 	"flag"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 
 	"github.com/joho/godotenv"
@@ -16,8 +17,8 @@ import (
 var (
 	connType   *string
 	loadEnv    *string
-	connection *conn.IRC
-	ctx        *internal.Context
+	connection []*conn.IRC
+	ctxs       map[string]*internal.Context
 	logger     *zap.Logger
 )
 
@@ -25,14 +26,16 @@ func newLogger() {
 	logger, _ = zap.NewProduction()
 }
 
-func newConnection() *conn.IRC {
-	c, err := conn.NewIRC(ctx)
-	if err != nil {
-		logger.Error(err.Error())
-		os.Exit(0)
-	}
+func setConnections() {
+	for _, ctx := range ctxs {
+		c, err := conn.NewIRC(ctx)
+		if err != nil {
+			logger.Error(err.Error())
+			os.Exit(0)
+		}
 
-	return c
+		connection = append(connection, c)
+	}
 }
 
 func init() {
@@ -46,23 +49,23 @@ func init() {
 		logger.Error(err.Error())
 	}
 
-	ctx = &internal.Context{
-		Logger:      logger,
-		ChannelName: os.Getenv("CHANNEL_NAME"),
-		BotName:     os.Getenv("BOT_USERNAME"),
-		OAuthToken:  os.Getenv("BOT_OAUTH_TOKEN"),
-	}
+	ctxs = internal.WriteContexts(logger,
+		os.Getenv("BOT_OAUTH_TOKEN"),
+		os.Getenv("BOT_USERNAME"),
+		strings.Split(os.Getenv("CHANNEL_NAME"), ","))
+
+	setConnections()
 }
 
 func main() {
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
-	connection = newConnection()
+	for _, c := range connection {
+		go bot.Start(c.Ctx, c)
 
-	go bot.Start(ctx, connection)
-
-	defer connection.Close()
+		defer c.Close()
+	}
 
 	<-stop
 

@@ -14,3 +14,22 @@ type Context struct {
 	OAuthToken  string
 	BotName     string
 }
+
+// WriteContexts returns multiples contexts,
+// each for one different channels
+func WriteContexts(l *zap.Logger, authToken, botName string, channels []string) map[string]*Context {
+	chs := map[string]*Context{}
+
+	for _, channel := range channels {
+		if _, ok := chs[channel]; !ok {
+			chs[channel] = &Context{
+				Logger:      l,
+				ChannelName: channel,
+				OAuthToken:  authToken,
+				BotName:     botName,
+			}
+		}
+	}
+
+	return chs
+}

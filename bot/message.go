@@ -26,6 +26,6 @@ type Message struct {
 	SentMessage string
 }
 
-func (m *Message) getString() string {
+func (m *Message) getString(b *Bootstrap) string {
 	return b.Command.GetAnswer(m.SentBy, m.SentMessage)
 }
