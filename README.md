@@ -4,10 +4,10 @@
 - [AuthToken](https://twitchapps.com/tmi/)
 
 ### TODO(v1):
-- [ ] Stablish a Bot
+- [x] Stablish a Bot
   - [x] IRC Connection
-  - [ ] Commands
-  - [ ] Database (JSON)
+  - [X] Commands
+  - [x] Database (JSON)
 
 ### TODO(v2):
 - [ ] Local deploy Docker
