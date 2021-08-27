@@ -26,7 +26,6 @@ type TestCases struct {
 func RunTests(t *testing.T, tts []TestCases) {
 	for _, tt := range tts {
 		t.Run(tt.Name, func(t *testing.T) {
-			t.Parallel()
 			switch tt.TestType {
 			case Equal:
 				assert.Equal(t, tt.Want, tt.Got)
