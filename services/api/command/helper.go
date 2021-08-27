@@ -20,8 +20,6 @@ type TMIViewers struct {
 	} `json:"chatters"`
 }
 
-var H *CmdHelper
-
 type CmdHelper struct {
 	ctx     *internal.Context
 	userURL string

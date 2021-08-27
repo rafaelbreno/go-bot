@@ -1,6 +1,7 @@
 package command
 
 import (
+	"fmt"
 	"math/rand"
 	"regexp"
 	"time"
@@ -12,6 +13,7 @@ import (
 // the messages to be sent
 type CommandCtx struct {
 	Ctx *internal.Context
+	H   *CmdHelper
 }
 
 // Command store commands
@@ -64,12 +66,12 @@ func (c *CommandCtx) GetAnswer(sentBy, inMessage string) string {
 		SentBy: sentBy,
 	}
 
-	return cmd.prepare(action)
+	return cmd.prepare(action, c)
 }
 
 type keyMap map[string]string
 
-func (c *Command) prepare(act *Action) string {
+func (c *Command) prepare(act *Action, ctx *CommandCtx) string {
 	rand.Seed(time.Now().Unix())
 
 	switch c.Type {
@@ -96,11 +98,14 @@ func (c *Command) prepare(act *Action) string {
 		})
 	case Cupido:
 		ans := ""
-		if val, ok := cupidPair[act.SentBy]; ok {
-			ans = val
-		} else {
-			ans = random(H.fetchUserList(), append(modBlacklist, "lajurubeba", "rafiusky", "rafiuskybot", act.SentBy)...)
-		}
+		//if val, ok := cupidPair[act.SentBy]; ok {
+		//ans = val
+		//} else {
+
+		fmt.Println(ctx.H.fetchUserList())
+
+		ans = random(ctx.H.fetchUserList(), append(modBlacklist, "lajurubeba", "rafiusky", "rafiuskybot", act.SentBy)...)
+		//}
 		return replace(c.Answer, keyMap{
 			"{user}":      act.SentBy,
 			"{user_list}": ans,

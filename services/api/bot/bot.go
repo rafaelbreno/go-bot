@@ -20,9 +20,6 @@ type Bootstrap struct {
 
 // Start ignites the bot
 func Start(ctx *internal.Context, irc *conn.IRC) {
-
-	command.H = command.NewCMDHelper(ctx)
-
 	ch := make(chan string, 1)
 
 	b := &Bootstrap{
@@ -30,6 +27,7 @@ func Start(ctx *internal.Context, irc *conn.IRC) {
 		IRC: irc,
 		Command: &command.CommandCtx{
 			Ctx: ctx,
+			H:   command.NewCMDHelper(ctx),
 		},
 		MsgChan: ch,
 	}
