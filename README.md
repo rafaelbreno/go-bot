@@ -3,6 +3,9 @@
 - I'm following the official [Twitch Chatbot Docs](https://dev.twitch.tv/docs/irc/guide)
 - [AuthToken](https://twitchapps.com/tmi/)
 
+### Deploy
+- Docker
+
 ### TODO(v1):
 - [x] Stablish a Bot
   - [x] IRC Connection
