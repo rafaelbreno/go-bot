@@ -1,7 +1,6 @@
 package command
 
 import (
-	"fmt"
 	"math/rand"
 	"regexp"
 	"time"
@@ -98,14 +97,9 @@ func (c *Command) prepare(act *Action, ctx *CommandCtx) string {
 		})
 	case Cupido:
 		ans := ""
-		//if val, ok := cupidPair[act.SentBy]; ok {
-		//ans = val
-		//} else {
-
-		fmt.Println(ctx.H.fetchUserList())
 
 		ans = random(ctx.H.fetchUserList(), append(modBlacklist, "lajurubeba", "rafiusky", "rafiuskybot", act.SentBy)...)
-		//}
+
 		return replace(c.Answer, keyMap{
 			"{user}":      act.SentBy,
 			"{user_list}": ans,
