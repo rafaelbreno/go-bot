@@ -2,9 +2,10 @@ package server
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/rafaelbreno/go-bot/api/internal"
-	"os"
 )
 
 type Server struct {
@@ -21,7 +22,9 @@ func (s *Server) ListenAndServe() {
 		os.Exit(0)
 	}
 
-	s.App.Get("/test", func (c *fiber.Ctx) error {
+	s.Port = string(append([]byte(":"), []byte(s.Port)...))
+
+	s.App.Get("/test", func(c *fiber.Ctx) error {
 		s.Ctx.Logger.Info("GET /test")
 		return c.JSON(map[string]string{
 			"message": "ok",
