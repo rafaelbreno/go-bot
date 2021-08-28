@@ -6,7 +6,7 @@ services:
       context: services/api/
       dockerfile: ../../.docker/golang/Dockerfile
     ports:
-      - "8070:8070"
+      - "${API_PORT}:${API_PORT}"
     image: "bot_api"
     container_name: "bot_api"
     environment:
@@ -15,3 +15,24 @@ services:
       - BOT_USERNAME=${API_BOT_USERNAME}
       - IRC_URL=${API_IRC_URL}
       - IRC_PORT=${API_IRC_PORT}
+  postgres:
+    build:
+      context: .
+      dockerfile: .docker/postgres/Dockerfile
+    ports:
+      - "${PGSQL_PORT}:${PGSQL_PORT}"
+    image: ${PGSQL_NAME}
+    container_name: ${PGSQL_NAME}
+    environment:
+      - PGDATA=${PGSQL_DATA}
+      - POSTGRES_DB=${PGSQL_DBNAME}
+      - POSTGRES_USER=${PGSQL_USER}
+      - POSTGRES_PASSWORD=${PGSQL_PASSWORD}
+  redis:
+    build:
+      context: .
+      dockerfile: .docker/redis/Dockerfile
+    ports:
+      - "${REDIS_PORT}:6379"
+    image: ${REDIS_NAME}
+    container_name: ${REDIS_NAME}
