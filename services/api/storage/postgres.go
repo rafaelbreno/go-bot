@@ -9,28 +9,24 @@ import (
 	"gorm.io/gorm"
 )
 
-var pgsqlURL string
-
 // DB handler DB connection
 type DB struct {
 	Client *gorm.DB
 	Ctx    *internal.Context
 }
 
-func init() {
+func newDB(ctx *internal.Context) *DB {
+	var pgsqlURL string
 	url := `host=%s port=%s user=%s password=%s dbname=%s sslmode=disable`
 
 	pgsqlURL = fmt.Sprintf(
 		url,
-		os.Getenv("PGSQL_HOST"),
-		os.Getenv("PGSQL_PORT"),
-		os.Getenv("PGSQL_USER"),
-		os.Getenv("PGSQL_PASSWORD"),
-		os.Getenv("PGSQL_DBNAME"),
+		ctx.Env["PGSQL_HOST"],
+		ctx.Env["PGSQL_PORT"],
+		ctx.Env["PGSQL_USER"],
+		ctx.Env["PGSQL_PASSWORD"],
+		ctx.Env["PGSQL_DBNAME"],
 	)
-}
-
-func newDB(ctx *internal.Context) *DB {
 	db, err := gorm.Open(postgres.Open(pgsqlURL), &gorm.Config{})
 
 	if err != nil {

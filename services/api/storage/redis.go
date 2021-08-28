@@ -16,8 +16,8 @@ type InMem struct {
 
 func newInMem(ctx *internal.Context) *InMem {
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     fmt.Sprintf("%s:%s", os.Getenv("REDIS_HOST"), os.Getenv("REDIS_PORT")),
-		Password: os.Getenv("REDIS_PASSWORD"),
+		Addr:     fmt.Sprintf("%s:%s", ctx.Env["REDIS_HOST"], ctx.Env["REDIS_PORT"]),
+		Password: ctx.Env["REDIS_PASSWORD"],
 		DB:       0,
 	})
 
