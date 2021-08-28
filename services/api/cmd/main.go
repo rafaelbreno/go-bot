@@ -7,6 +7,8 @@ import (
 	"syscall"
 
 	"github.com/joho/godotenv"
+	"github.com/rafaelbreno/go-bot/api/entity"
+	"github.com/rafaelbreno/go-bot/api/handler"
 	"github.com/rafaelbreno/go-bot/api/internal"
 	"github.com/rafaelbreno/go-bot/api/server"
 	"github.com/rafaelbreno/go-bot/api/storage"
@@ -16,6 +18,7 @@ import (
 var ctx *internal.Context
 var sv *server.Server
 var st *storage.Storage
+var h handler.Handler
 
 func init() {
 	if err := godotenv.Load(); err != nil {
@@ -49,6 +52,15 @@ func init() {
 	}
 
 	st = storage.NewStorage(ctx)
+
+	st.
+		SQL.
+		Client.AutoMigrate(&entity.Command{})
+
+	h = handler.Handler{
+		Ctx:     ctx,
+		Storage: st,
+	}
 }
 
 func main() {
@@ -57,7 +69,7 @@ func main() {
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
-	go sv.ListenAndServe()
+	go sv.ListenAndServe(h)
 
 	defer sv.Close()
 	<-stop
