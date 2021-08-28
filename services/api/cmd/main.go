@@ -33,7 +33,7 @@ func init() {
 
 	sv = &server.Server{
 		Ctx:  ctx,
-		Port: os.Getenv("APP_PORT"),
+		Port: os.Getenv("API_PORT"),
 	}
 }
 
