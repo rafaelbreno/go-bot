@@ -55,8 +55,6 @@ func (h *CommandHandler) Create(c *fiber.Ctx) error {
 
 	command := commandJSON.ToCommand()
 
-	// arruma pufavo >.<
-
 	if err := h.
 		Storage.
 		SQL.
@@ -73,4 +71,22 @@ func (h *CommandHandler) Create(c *fiber.Ctx) error {
 
 	return c.
 		JSON(command.ToJSON())
+}
+
+func (h *CommandHandler) Read(c *fiber.Ctx) error {
+	command := new(entity.Command)
+
+	if err := h.
+		Storage.
+		SQL.
+		Client.
+		First(&command, "id = ?", c.Params("id")).
+		Error; err != nil {
+		h.Ctx.Logger.Error(err.Error())
+		return c.Status(http.StatusNotFound).JSON(fiber.Map{
+			"message": "Not found",
+		})
+	}
+
+	return c.Status(http.StatusOK).JSON(command)
 }

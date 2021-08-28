@@ -63,6 +63,7 @@ func (s *Server) CommandServer() {
 	u := s.App.Group("/command")
 
 	u.Post("/create", uh.Create)
+	u.Get("/:id", uh.Read)
 }
 
 func (s *Server) Close() {
