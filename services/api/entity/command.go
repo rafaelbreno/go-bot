@@ -22,12 +22,44 @@ const (
 
 // Command stores data related.
 type Command struct {
-	ID          uuid.UUID   `gorm:"type:uuid;default:gen_random_uuid()"`
-	Trigger     string      `gorm:"size:16"`
-	Template    string      `gorm:"size:400"`
-	Cooldown    string      `gorm:"size:16"`
-	CommandType CommandType `gorm:"type:command_type"`
+	ID          uuid.UUID `json:"id" gorm:"type:uuid;default:gen_random_uuid()"`
+	Trigger     string    `json:"trigger" gorm:"size:16"`
+	Template    string    `json:"template" gorm:"size:400"`
+	Cooldown    string    `json:"cooldown" gorm:"size:16"`
+	CommandType string    `json:"command_type" gorm:"type:varchar;size:16"`
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 	DeletedAt   gorm.DeletedAt `gorm:"index"`
+}
+
+// ToJSON convert Command struct to
+// a map type
+func (c Command) ToJSON() CommandJSON {
+	return CommandJSON{
+		ID:          c.ID,
+		Trigger:     c.Trigger,
+		Template:    c.Template,
+		CommandType: c.CommandType,
+		Cooldown:    c.Cooldown,
+	}
+}
+
+// CommandJSON DTO to receive data from
+// http request
+type CommandJSON struct {
+	ID          uuid.UUID `json:"id"`
+	Trigger     string    `json:"trigger"`
+	Template    string    `json:"template"`
+	Cooldown    string    `json:"cooldown"`
+	CommandType string    `json:"command_type"`
+}
+
+func (c CommandJSON) ToCommand() Command {
+	return Command{
+		ID:          c.ID,
+		Trigger:     c.Trigger,
+		Template:    c.Template,
+		CommandType: c.CommandType,
+		Cooldown:    c.Cooldown,
+	}
 }

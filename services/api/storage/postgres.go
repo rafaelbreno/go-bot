@@ -27,6 +27,7 @@ func newDB(ctx *internal.Context) *DB {
 		ctx.Env["PGSQL_PASSWORD"],
 		ctx.Env["PGSQL_DBNAME"],
 	)
+
 	db, err := gorm.Open(postgres.Open(pgsqlURL), &gorm.Config{})
 
 	if err != nil {

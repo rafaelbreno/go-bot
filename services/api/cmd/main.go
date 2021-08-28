@@ -7,18 +7,15 @@ import (
 	"syscall"
 
 	"github.com/joho/godotenv"
-	"github.com/rafaelbreno/go-bot/api/entity"
 	"github.com/rafaelbreno/go-bot/api/handler"
 	"github.com/rafaelbreno/go-bot/api/internal"
 	"github.com/rafaelbreno/go-bot/api/server"
-	"github.com/rafaelbreno/go-bot/api/storage"
 	"go.uber.org/zap"
 )
 
 var ctx *internal.Context
 var sv *server.Server
-var st *storage.Storage
-var h handler.Handler
+var h *handler.Handler
 
 func init() {
 	if err := godotenv.Load(); err != nil {
@@ -51,16 +48,10 @@ func init() {
 		Port: os.Getenv("API_PORT"),
 	}
 
-	st = storage.NewStorage(ctx)
-
-	st.
-		SQL.
-		Client.AutoMigrate(&entity.Command{})
-
-	h = handler.Handler{
-		Ctx:     ctx,
-		Storage: st,
+	h = &handler.Handler{
+		Ctx: ctx,
 	}
+
 }
 
 func main() {
