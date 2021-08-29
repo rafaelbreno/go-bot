@@ -33,7 +33,7 @@ type CommandHandler struct {
 }
 
 // Create a command
-func (h *CommandHandler) Create(c *fiber.Ctx) error {
+func (h *Handler) Create(c *fiber.Ctx) error {
 	commandJSON := new(entity.CommandJSON)
 
 	if len(c.Body()) <= 0 {
@@ -73,14 +73,34 @@ func (h *CommandHandler) Create(c *fiber.Ctx) error {
 		JSON(command.ToJSON())
 }
 
-func (h *CommandHandler) Read(c *fiber.Ctx) error {
+func (h *Handler) Read(c *fiber.Ctx) error {
 	command := new(entity.Command)
 
 	if err := h.
 		Storage.
 		SQL.
 		Client.
-		First(&command, "id = ?", c.Params("id")).
+		First(&command, "id = ?", c.Params("id")).Error; err != nil {
+
+		h.Ctx.Logger.Error(err.Error())
+		return c.Status(http.StatusNotFound).JSON(fiber.Map{
+			"message": "Not found",
+		})
+	}
+
+	return c.
+		Status(http.StatusOK).
+		JSON(command)
+}
+
+func (h *Handler) Delete(c *fiber.Ctx) error {
+	command := new(entity.Command)
+
+	if err := h.
+		Storage.
+		SQL.
+		Client.
+		Delete(&command, "id = ?", c.Params("id")).
 		Error; err != nil {
 		h.Ctx.Logger.Error(err.Error())
 		return c.Status(http.StatusNotFound).JSON(fiber.Map{
@@ -88,5 +108,9 @@ func (h *CommandHandler) Read(c *fiber.Ctx) error {
 		})
 	}
 
-	return c.Status(http.StatusOK).JSON(command)
+	return c.
+		Status(http.StatusOK).
+		JSON(fiber.Map{
+			"message": "Command deleted",
+		})
 }
