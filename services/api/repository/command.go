@@ -38,6 +38,7 @@ func (cr CommandRepoCtx) Read(id string) (entity.Command, error) {
 	cmdFound := new(entity.Command)
 
 	if err := cr.Storage.SQL.Client.First(&cmdFound, "id = ?", id).Error; err != nil {
+		cr.Ctx.Logger.Error(err.Error())
 		return entity.Command{}, err
 	}
 
@@ -50,12 +51,14 @@ func (cr CommandRepoCtx) Update(id string, cmd entity.Command) (entity.Command, 
 	cmdNew := new(entity.Command)
 
 	if err := cr.Storage.SQL.Client.First(&cmdNew, "id = ?", id).Error; err != nil {
-		return entity.Command{}, nil
+		cr.Ctx.Logger.Error(err.Error())
+		return entity.Command{}, err
 	}
 
 	cmdNew.UpdateFields(cmd)
 
 	if err := cr.Storage.SQL.Client.Save(&cmdNew).Error; err != nil {
+		cr.Ctx.Logger.Error(err.Error())
 		return entity.Command{}, err
 	}
 
@@ -68,6 +71,10 @@ func (cr CommandRepoCtx) Delete(id string) error {
 	cmd := new(entity.Command)
 
 	err := cr.Storage.SQL.Client.Where("id = ?", id).Delete(&cmd).Error
+
+	if err != nil {
+		cr.Ctx.Logger.Error(err.Error())
+	}
 
 	return err
 }
