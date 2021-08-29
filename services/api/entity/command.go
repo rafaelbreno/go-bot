@@ -44,6 +44,21 @@ func (c Command) ToJSON() CommandJSON {
 	}
 }
 
+func (c *Command) UpdateFields(cmdFields Command) {
+	if c.Trigger != cmdFields.Trigger {
+		c.Trigger = cmdFields.Trigger
+	}
+	if c.Template != cmdFields.Template {
+		c.Template = cmdFields.Template
+	}
+	if c.Cooldown != cmdFields.Cooldown {
+		c.Cooldown = cmdFields.Cooldown
+	}
+	if c.CommandType != cmdFields.CommandType {
+		c.CommandType = cmdFields.CommandType
+	}
+}
+
 // CommandJSON DTO to receive data from
 // http request
 type CommandJSON struct {
