@@ -1,4 +1,4 @@
-FROM golang:1.16.7-alpine
+FROM golang:1.16.7-alpine AS build
 
 WORKDIR /go/src/app
 
@@ -12,4 +12,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o bin/app cmd/main.go
 
 FROM golang:1.16.7-alpine
 COPY --from=build /go/src/app/bin/app .
+
+EXPOSE 8070
+
 CMD [ "./app", "-env=false" ]

@@ -12,36 +12,45 @@ import (
 // the messages to be sent
 type CommandCtx struct {
 	Ctx *internal.Context
+	H   *CmdHelper
 }
 
 // Command store commands
 type Command struct {
-	Key     string
-	Answer  string
-	Options []string
-	Type    int
+	Key         string
+	Answer      string
+	Options     []string
+	Type        int
+	HasCooldown bool
+	Cooldown    time.Duration
+	ExpireAt    int64
 }
 
 type Action struct {
 	SentBy string
 }
 
-var commands = map[string]Command{
+var commands = map[string]*Command{
 	"!hello": {
-		Key:    "!hello",
-		Type:   Simple,
-		Answer: "Hello, {user}!",
+		Key:         "!hello",
+		Type:        Simple,
+		Answer:      "Hello, {user}!",
+		HasCooldown: true,
+		Cooldown:    time.Duration(15 * time.Second),
+		ExpireAt:    0,
 	},
 	"!signo": {
-		Key:     "!signo",
-		Type:    Random,
-		Answer:  "/me {user} decidiu trocar de signo, agora seu novo signo é: {answer}",
-		Options: lstSigno,
+		Key:         "!signo",
+		Type:        Random,
+		HasCooldown: false,
+		Answer:      "/me {user} decidiu trocar de signo, agora seu novo signo é: {answer}",
+		Options:     lstSigno,
 	},
 	"!cupido": {
-		Key:    "!cupido",
-		Type:   Cupido,
-		Answer: "/me {user} sua alma gêmea é: @{user_list}",
+		Key:         "!cupido",
+		Type:        Cupido,
+		HasCooldown: false,
+		Answer:      "/me {user} sua alma gêmea é: @{user_list}",
 	},
 }
 
@@ -53,7 +62,7 @@ var (
 func (c *CommandCtx) GetAnswer(sentBy, inMessage string) string {
 	cmdKey := string(cmdRegex.Find([]byte(inMessage)))
 
-	var cmd Command
+	var cmd *Command
 	var ok bool
 
 	if cmd, ok = commands[cmdKey]; !ok {
@@ -64,13 +73,23 @@ func (c *CommandCtx) GetAnswer(sentBy, inMessage string) string {
 		SentBy: sentBy,
 	}
 
-	return cmd.prepare(action)
+	return cmd.prepare(action, c)
 }
 
 type keyMap map[string]string
 
-func (c *Command) prepare(act *Action) string {
-	rand.Seed(time.Now().Unix())
+func (c *Command) prepare(act *Action, ctx *CommandCtx) string {
+	timeNow := time.Now()
+	timeNowUnix := timeNow.Unix()
+
+	rand.Seed(timeNowUnix)
+
+	if c.HasCooldown {
+		if !(c.ExpireAt == 0 || c.ExpireAt <= timeNowUnix) {
+			return ""
+		}
+		c.ExpireAt = timeNow.Add(c.Cooldown).Unix()
+	}
 
 	switch c.Type {
 	case Simple:
@@ -96,11 +115,9 @@ func (c *Command) prepare(act *Action) string {
 		})
 	case Cupido:
 		ans := ""
-		if val, ok := cupidPair[act.SentBy]; ok {
-			ans = val
-		} else {
-			ans = random(H.fetchUserList(), append(modBlacklist, "lajurubeba", "rafiusky", "rafiuskybot", act.SentBy)...)
-		}
+
+		ans = random(ctx.H.fetchUserList(), append(modBlacklist, "lajurubeba", "rafiusky", "rafiuskybot", act.SentBy)...)
+
 		return replace(c.Answer, keyMap{
 			"{user}":      act.SentBy,
 			"{user_list}": ans,
