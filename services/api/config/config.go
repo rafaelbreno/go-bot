@@ -42,8 +42,18 @@ func init() {
 			"REDIS_HOST":     os.Getenv("REDIS_HOST"),
 			"REDIS_PORT":     os.Getenv("REDIS_PORT"),
 			"REDIS_PASSWORD": os.Getenv("REDIS_PASSWORD"),
+			"API_PORT":       getPort(),
 		},
 	}
 
 	Storage = storage.NewStorage(Ctx)
+}
+
+func getPort() string {
+	envPort := os.Getenv("API_PORT")
+	if []byte(envPort)[0] == ':' {
+		return envPort
+	}
+
+	return string(append([]byte(":"), []byte(envPort)...))
 }
