@@ -54,7 +54,7 @@ type CommandJSON struct {
 	CommandType string    `json:"command_type"`
 }
 
-func (c CommandJSON) ToCommand() Command {
+func (c *CommandJSON) ToCommand() Command {
 	return Command{
 		ID:          c.ID,
 		Trigger:     c.Trigger,
