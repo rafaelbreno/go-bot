@@ -1,16 +1,17 @@
 package repository
 
 import (
+	"github.com/rafaelbreno/go-bot/api/config"
 	"github.com/rafaelbreno/go-bot/api/entity"
+	"github.com/rafaelbreno/go-bot/api/internal"
 	"github.com/rafaelbreno/go-bot/api/storage"
-	"go.uber.org/zap"
 )
 
 // CommandRepo stores the functions
 // related to Command actions.
 type CommandRepo interface {
 	Create(cmd entity.Command) (entity.Command, error)
-	Update(cmd entity.Command) (entity.Command, error)
+	Update(id string, cmd entity.Command) (entity.Command, error)
 	Read(id string) (entity.Command, error)
 	Delete(id string) error
 }
@@ -19,7 +20,7 @@ type CommandRepo interface {
 // the Commands's context.
 type CommandRepoCtx struct {
 	Storage *storage.Storage
-	Logger  *zap.Logger
+	Ctx     *internal.Context
 }
 
 // Create insert a new command into
@@ -45,10 +46,10 @@ func (cr CommandRepoCtx) Read(id string) (entity.Command, error) {
 
 // Update - update a command with the given fields
 // with the new values.
-func (cr CommandRepoCtx) Update(cmd entity.Command) (entity.Command, error) {
+func (cr CommandRepoCtx) Update(id string, cmd entity.Command) (entity.Command, error) {
 	cmdNew := new(entity.Command)
 
-	if err := cr.Storage.SQL.Client.First(&cmdNew, "id = ?", cmd.ID).Error; err != nil {
+	if err := cr.Storage.SQL.Client.First(&cmdNew, "id = ?", id).Error; err != nil {
 		return entity.Command{}, nil
 	}
 
@@ -69,4 +70,13 @@ func (cr CommandRepoCtx) Delete(id string) error {
 	err := cr.Storage.SQL.Client.Where("id = ?", id).Delete(&cmd).Error
 
 	return err
+}
+
+// NewCommandRepoCtx creates and return a
+// configured CommandRepoCtx.
+func NewCommandRepoCtx() CommandRepoCtx {
+	return CommandRepoCtx{
+		Storage: config.Storage,
+		Ctx:     config.Ctx,
+	}
 }
