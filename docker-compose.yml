@@ -38,12 +38,17 @@ services:
     container_name: ${REDIS_NAME}
   zookeeper:
     image: bitnami/zookeeper:latest
+    container_name: "bot-zookeeper"
     ports:
       - "2181:2181"
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
   kafka:
-    image: bitnami/kafka:latest
+    build:
+      context: .docker/kafka/
+      dockerfile: ../../.docker/kafka/Dockerfile
+    image: "bot-kafka"
+    container_name: "bot-kafka"
     ports:
       - "9092:9092"
     environment:
