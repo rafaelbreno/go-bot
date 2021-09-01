@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"encoding/json"
 	"time"
 
 	"github.com/google/uuid"
@@ -77,4 +78,12 @@ func (c *CommandJSON) ToCommand() Command {
 		CommandType: c.CommandType,
 		Cooldown:    c.Cooldown,
 	}
+}
+
+// ToJSONString returns CommandJSON as JSON string
+func (c *CommandJSON) ToJSONString() (string, error) {
+
+	b, err := json.Marshal(c)
+
+	return string(b), err
 }
