@@ -37,25 +37,22 @@ services:
     image: ${REDIS_NAME}
     container_name: ${REDIS_NAME}
   zookeeper:
-    image: bitnami/zookeeper:latest
+    image: wurstmeister/zookeeper:3.4.6
     container_name: "bot-zookeeper"
     ports:
       - "2181:2181"
-    environment:
-      - ALLOW_ANONYMOUS_LOGIN=yes
   kafka:
-    build:
-      context: .docker/kafka/
-      dockerfile: ../../.docker/kafka/Dockerfile
-    image: "bot-kafka"
+    image: wurstmeister/kafka:2.13-2.7.0
     container_name: "bot-kafka"
     ports:
       - "9092:9092"
+    links:
+      - zookeeper
     environment:
-      - KAFKA_BROKER_ID=1
-      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://127.0.0.1:9092
-      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
-      - ALLOW_PLAINTEXT_LISTENER=yes
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_ADVERTISED_PORT: 9092
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+      KAFKA_CREATE_TOPICS: 'commands:1:1'
     depends_on:
       - zookeeper
