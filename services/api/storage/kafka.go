@@ -95,3 +95,21 @@ func (k *KafkaClient) setProducer() *KafkaClient {
 
 	return k
 }
+
+func (k *KafkaClient) Produce(key, value []byte) {
+	deliveryChan := make(chan kafka.Event, 3)
+
+	if err := k.P.Produce(&kafka.Message{
+		TopicPartition: kafka.TopicPartition{
+			Topic:     k.topic,
+			Partition: kafka.PartitionAny,
+		},
+		Value: value,
+		Key:   key,
+	}, deliveryChan); err != nil {
+		if err != nil {
+			k.Ctx.Logger.Error(err.Error())
+			os.Exit(0)
+		}
+	}
+}
