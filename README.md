@@ -7,13 +7,13 @@
 ### Deploy
 - Docker
 
-### TODO(v1):
+### TODOv1:
 - [x] Stablish a Bot
   - [x] IRC Connection
   - [X] Commands
   - [x] Database (JSON)
 
-### TODO(v2)
+### TODOv2:
 - [x] Develop API
   - [x] Establish API base
     - [x] Context
@@ -25,14 +25,16 @@
       - [x] Write Migrations
       - [x] Define Entities
 
-### TODO(v3):
-- [ ] Study the difference between:
-  - [ ] RabbitMQ and Kakfa
-  - [ ] HTTP and gRPC
-- [ ] Up Kafka/RabbitMQ using Docker
-- [ ] API
-  - [ ] Implement the communication between API and Kafka/RabbitMQ
-  - [ ] Produce - RabbitMQ/Kafka
+### TODOv3:
+- [x] Study the difference between:
+  - [x] RabbitMQ and Kafka
+  - [x] HTTP and gRPC
+- [x] Up Kafka using Docker
+- [x] API
+  - [x] Implement the communication between API and Kafka/RabbitMQ
+  - [x] Produce - Kafka
+
+### TODOv4:
 - [ ] Queue Manager
   - [ ] Create microservice
   - [ ] Implement the communication between API and Kafka/RabbitMQ
