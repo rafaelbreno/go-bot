@@ -36,7 +36,7 @@ func (k *KafkaClient) createTopic() *KafkaClient {
 	k.topic = t
 
 	kafkaAdmin, err := kafka.NewAdminClient(&kafka.ConfigMap{
-		"bootstrap.server": fmt.Sprintf("%s:%s", k.Ctx.Env["KAFKA_URL"], k.Ctx.Env["KAFKA_PORT"]),
+		"bootstrap.servers": fmt.Sprintf("%s:%s", k.Ctx.Env["KAFKA_URL"], k.Ctx.Env["KAFKA_PORT"]),
 	})
 
 	defer kafkaAdmin.Close()
@@ -55,7 +55,7 @@ func (k *KafkaClient) createTopic() *KafkaClient {
 		[]kafka.TopicSpecification{{
 			Topic:             k.Ctx.Env["KAFKA_TOPIC"],
 			NumPartitions:     2,
-			ReplicationFactor: 2,
+			ReplicationFactor: 1,
 		}},
 		kafka.SetAdminOperationTimeout(60*time.Second),
 	)
@@ -79,7 +79,6 @@ func (k *KafkaClient) setProducer() *KafkaClient {
 		"enable.partition.eof": true,
 		"group.instance.id":    "1",
 		"log_level":            2,
-		"debug":                "all",
 	})
 
 	k.Ctx.Logger.Info("Connecting into Kafka...")
@@ -92,6 +91,8 @@ func (k *KafkaClient) setProducer() *KafkaClient {
 		k.Ctx.Logger.Error(err.Error())
 		os.Exit(0)
 	}
+
+	k.P = p
 
 	return k
 }
