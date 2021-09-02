@@ -81,9 +81,9 @@ func (c *CommandJSON) ToCommand() Command {
 }
 
 // ToJSONString returns CommandJSON as JSON string
-func (c *CommandJSON) ToJSONString() (string, error) {
+func (c *CommandJSON) ToJSONString() ([]byte, error) {
 
 	b, err := json.Marshal(c)
 
-	return string(b), err
+	return b, err
 }
