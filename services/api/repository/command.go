@@ -28,7 +28,7 @@ type CommandRepoCtx struct {
 const (
 	add    = "ADD"
 	update = "UPDATE"
-	delete = "DELETE"
+	remove = "DELETE"
 )
 
 // Create insert a new command into
@@ -82,6 +82,16 @@ func (cr CommandRepoCtx) Update(id string, cmd entity.Command) (entity.Command, 
 		cr.Ctx.Logger.Error(err.Error())
 		return entity.Command{}, err
 	}
+	jsonCommand := cmdNew.ToJSON()
+
+	b, err := jsonCommand.ToJSONString()
+
+	if err != nil {
+		cr.Ctx.Logger.Error(err.Error())
+		os.Exit(0)
+	}
+
+	cr.Storage.KafkaClient.Produce([]byte(update), b)
 
 	return *cmdNew, nil
 }
@@ -96,6 +106,17 @@ func (cr CommandRepoCtx) Delete(id string) error {
 	if err != nil {
 		cr.Ctx.Logger.Error(err.Error())
 	}
+
+	jsonCommand := cmd.ToJSON()
+
+	b, err := jsonCommand.ToJSONString()
+
+	if err != nil {
+		cr.Ctx.Logger.Error(err.Error())
+		os.Exit(0)
+	}
+
+	cr.Storage.KafkaClient.Produce([]byte(remove), b)
 
 	return err
 }
