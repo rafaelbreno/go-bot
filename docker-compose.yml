@@ -36,3 +36,22 @@ services:
       - "${REDIS_PORT}:6379"
     image: ${REDIS_NAME}
     container_name: ${REDIS_NAME}
+  zookeeper:
+    image: wurstmeister/zookeeper:3.4.6
+    container_name: "${ZOOKEEPER_NAME}"
+    ports:
+      - "${ZOOKEEPER_PORT}:${ZOOKEEPER_PORT}"
+  kafka:
+    image: wurstmeister/kafka:2.13-2.7.0
+    container_name: "${KAFKA_NAME}"
+    ports:
+      - "${KAFKA_PORT}:${KAFKA_PORT}"
+    links:
+      - zookeeper
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: "${ZOOKEEPER_SERVICE}:${ZOOKEEPER_PORT}"
+      KAFKA_ADVERTISED_HOST_NAME: "localhost"
+      KAFKA_ADVERTISED_PORT: "${KAFKA_PORT}"
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+    depends_on:
+      - zookeeper

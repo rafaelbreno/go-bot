@@ -42,6 +42,9 @@ func init() {
 			"REDIS_HOST":     os.Getenv("REDIS_HOST"),
 			"REDIS_PORT":     os.Getenv("REDIS_PORT"),
 			"REDIS_PASSWORD": os.Getenv("REDIS_PASSWORD"),
+			"KAFKA_URL":      os.Getenv("KAFKA_URL"),
+			"KAFKA_PORT":     os.Getenv("KAFKA_PORT"),
+			"KAFKA_TOPIC":    os.Getenv("KAFKA_TOPIC"),
 			"API_PORT":       getPort(),
 		},
 	}

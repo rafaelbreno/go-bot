@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"os"
+
 	"github.com/rafaelbreno/go-bot/api/config"
 	"github.com/rafaelbreno/go-bot/api/entity"
 	"github.com/rafaelbreno/go-bot/api/internal"
@@ -17,18 +19,37 @@ type CommandRepo interface {
 }
 
 // CommandRepoCtx represents
-// the Commands's context.
+// the Command's context.
 type CommandRepoCtx struct {
 	Storage *storage.Storage
 	Ctx     *internal.Context
 }
 
+const (
+	add    = "ADD"
+	update = "UPDATE"
+	remove = "DELETE"
+)
+
 // Create insert a new command into
 // the database.
 func (cr CommandRepoCtx) Create(cmd entity.Command) (entity.Command, error) {
 	if err := cr.Storage.SQL.Client.Create(&cmd).Error; err != nil {
+		cr.Storage.Ctx.Logger.Error(err.Error())
 		return entity.Command{}, err
 	}
+
+	jsonCommand := cmd.ToJSON()
+
+	b, err := jsonCommand.ToJSONString()
+
+	if err != nil {
+		cr.Ctx.Logger.Error(err.Error())
+		os.Exit(0)
+	}
+
+	cr.Storage.KafkaClient.Produce([]byte(add), b)
+
 	return cmd, nil
 }
 
@@ -61,6 +82,16 @@ func (cr CommandRepoCtx) Update(id string, cmd entity.Command) (entity.Command, 
 		cr.Ctx.Logger.Error(err.Error())
 		return entity.Command{}, err
 	}
+	jsonCommand := cmdNew.ToJSON()
+
+	b, err := jsonCommand.ToJSONString()
+
+	if err != nil {
+		cr.Ctx.Logger.Error(err.Error())
+		os.Exit(0)
+	}
+
+	cr.Storage.KafkaClient.Produce([]byte(update), b)
 
 	return *cmdNew, nil
 }
@@ -75,6 +106,17 @@ func (cr CommandRepoCtx) Delete(id string) error {
 	if err != nil {
 		cr.Ctx.Logger.Error(err.Error())
 	}
+
+	jsonCommand := cmd.ToJSON()
+
+	b, err := jsonCommand.ToJSONString()
+
+	if err != nil {
+		cr.Ctx.Logger.Error(err.Error())
+		os.Exit(0)
+	}
+
+	cr.Storage.KafkaClient.Produce([]byte(remove), b)
 
 	return err
 }
