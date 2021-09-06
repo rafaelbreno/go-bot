@@ -6,4 +6,5 @@ edition = "2018"
 
 [dependencies]
 dotenv = "0.15.0"
+kafka = "0.8"
 redis = "*"
