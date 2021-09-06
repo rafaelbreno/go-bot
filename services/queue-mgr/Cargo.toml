@@ -1,0 +1,9 @@
+[package]
+name = "queue-mgr"
+version = "0.1.0"
+authors = ["Rafiusky <Twitter: @rafiusky>"]
+edition = "2018"
+
+[dependencies]
+dotenv = "0.15.0"
+redis = "*"
