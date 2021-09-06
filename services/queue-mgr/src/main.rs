@@ -33,14 +33,16 @@ fn redis_connect() -> redis::Connection {
 }
 
 fn start_consumer(topic: String, brokers: Vec<String>) -> Result<(), KafkaError> {
-    let mut con = Consumer::from_hosts(brokers)
+    let mut conn_redis = redis_connect();
+
+    let mut conn_kafka = Consumer::from_hosts(brokers)
         .with_topic(topic)
         .with_fallback_offset(FetchOffset::Earliest)
         .with_offset_storage(GroupOffsetStorage::Kafka)
         .create()?;
 
     loop {
-        let mss = con.poll()?;
+        let mss = conn_kafka.poll()?;
 
         if mss.is_empty() {
             println!("No messages")
@@ -48,10 +50,19 @@ fn start_consumer(topic: String, brokers: Vec<String>) -> Result<(), KafkaError>
 
         for ms in mss.iter(){
             for m in ms.messages(){
-                println!("{}:{}@{}: {:?} - {:?}", ms.topic(), ms.partition(), m.offset, m.key, m.value);
-            }
 
+                let key = String::from_utf8_lossy(&m.key);
+                let value = String::from_utf8_lossy(&m.value);
+
+                let _: () = redis::cmd("SET")
+                    .arg(key.to_string())
+                    .arg(value.to_string())
+                    .query(&mut conn_redis)
+                    .expect("Not able to set key");
+            }
+            let _ = conn_kafka.consume_messageset(ms);
         }
+        conn_kafka.commit_consumed()?;
     }
 }
 
@@ -63,20 +74,6 @@ fn start_consumer(topic: String, brokers: Vec<String>) -> Result<(), KafkaError>
 fn main() {
     dotenv().ok();
 
-    let mut conn = redis_connect();
-
-    let _: () = redis::cmd("SET")
-        .arg("key")
-        .arg("value")
-        .query(&mut conn)
-        .expect("'key' not found");
-
-    let found: String = redis::cmd("GET")
-        .arg("key")
-        .query(&mut conn)
-        .expect("'key' not found");
-
-    println!("{}", found);
 
     let kafka_url = match env::var("KAFKA_URL") {
         Ok(val) => val,
