@@ -4,6 +4,9 @@ defmodule Auth.Endpoint do
   plug :match
   plug :dispatch
 
+  forward "/auth", 
+    to: Auth.Router
+
   get "/hello" do
     send_resp(conn, 200, "world!")
   end
