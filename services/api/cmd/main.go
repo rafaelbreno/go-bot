@@ -27,7 +27,18 @@ func main() {
 	go sv.ListenAndServe()
 
 	defer sv.Close()
+
 	<-stop
 
+	st := config.Storage
+
+	defer st.KafkaClient.P.Close()
+	db, _ := st.SQL.Client.DB()
+	defer func(){
+		if err := db.Close(); err != nil {
+			ctx.Logger.Error(err.Error())
+			os.Exit(0)
+		}
+	}()
 	ctx.Logger.Info("Gracefully terminating...")
 }
