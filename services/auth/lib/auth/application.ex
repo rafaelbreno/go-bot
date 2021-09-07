@@ -14,7 +14,7 @@ defmodule Auth.Application do
     end
 
     children = [
-      Auth.Endpoint
+      {Plug.Cowboy, scheme: :http, plug: Auth.Endpoint, options: [port: 4001] },
       # Starts a worker by calling: Auth.Worker.start_link(arg)
       # {Auth.Worker, arg}
     ]
