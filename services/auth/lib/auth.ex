@@ -13,6 +13,6 @@ defmodule Auth do
 
   """
   def hello do
-    :world
+    IO.puts("hello")
   end
 end

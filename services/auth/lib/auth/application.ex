@@ -7,14 +7,24 @@ defmodule Auth.Application do
 
   @impl true
   def start(_type, _args) do
+    unless Mix.env == :prod do
+      Dotenv.load
+      redis_host = System.get_env("REDIS_HOST")
+      IO.puts(redis_host)
+    end
+
     children = [
+      Auth.Endpoint
       # Starts a worker by calling: Auth.Worker.start_link(arg)
       # {Auth.Worker, arg}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
-    opts = [strategy: :one_for_one, name: Auth.Supervisor]
+    opts = [
+      strategy: :one_for_one, 
+      name: Auth.Supervisor
+    ]
     Supervisor.start_link(children, opts)
   end
 end
