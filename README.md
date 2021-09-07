@@ -35,15 +35,27 @@
   - [x] Produce - Kafka
 
 ### TODOv4:
-- [ ] Queue Manager
-  - [ ] Create microservice
-  - [ ] Implement the communication between API and Kafka/RabbitMQ
-  - [ ] Implement Redis
-  - [ ] Consume - RabbitMQ/Kafka
-  - [ ] Insert/Update/Delete Redis rows
-  - [ ] Implement HealthCheck
+- [x] Queue Manager
+  - [x] Create microservice
+  - [x] Implement the communication between API and Kafka/RabbitMQ
+  - [x] Implement Redis
+  - [x] Consume - Kafka
+
+### TODOv5:
+- [ ] Auth service
+  - [ ] Redis Connection
+  - [ ] Postgres Connection
+  - [ ] Endpoints
+    - [ ] SignUP
+    - [ ] SignIn
+    - [ ] SignOut
+    - [ ] CheckAuth
+  - [ ] 
 
 ### TODO(v?):
+- Queue Mgr
+  - [ ] Insert/Update/Delete Redis rows
+  - [ ] Implement HealthCheck
 - [ ] Local deploy Docker
 - [ ] Front-end
   - [ ] Choose one
