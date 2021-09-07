@@ -66,11 +66,6 @@ fn start_consumer(topic: String, brokers: Vec<String>) -> Result<(), KafkaError>
     }
 }
 
-//KAFKA_URL=localhost
-//KAFKA_PORT=9092
-//KAFKA_TOPIC=commandss
-
-
 fn main() {
     dotenv().ok();
 
