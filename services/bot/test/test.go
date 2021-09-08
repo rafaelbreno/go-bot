@@ -12,6 +12,7 @@ type TestType int
 const (
 	Equal TestType = iota
 	Nil
+	NotNil
 	Regex
 )
 
@@ -33,6 +34,8 @@ func RunTests(t *testing.T, tts []TestCases) {
 				assert.Regexp(t, tt.RegexRule, tt.Got)
 			case Nil:
 				assert.Nil(t, tt.Got)
+			case NotNil:
+				assert.NotNil(t, tt.Got)
 			default:
 			}
 		})
