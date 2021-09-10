@@ -27,7 +27,8 @@ defmodule Auth.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:cowboy, "~> 2.9"},
       {:ecto_sql, "~> 3.7.0"},
-      {:postgrex, "~> 0.15"}
+      {:postgrex, "~> 0.15"},
+      {:redix, "~> 1.1"},
       # {:dep_from_hexpm, "~> 0.3.0"},
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
     ]
