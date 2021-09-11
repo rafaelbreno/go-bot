@@ -39,6 +39,7 @@ type Command struct {
 func (c Command) ToJSON() CommandJSON {
 	return CommandJSON{
 		ID:          c.ID,
+		UserID:      c.UserID,
 		Trigger:     c.Trigger,
 		Template:    c.Template,
 		CommandType: c.CommandType,
@@ -75,6 +76,7 @@ type CommandJSON struct {
 func (c *CommandJSON) ToCommand() Command {
 	return Command{
 		ID:          c.ID,
+		UserID:      c.UserID,
 		Trigger:     c.Trigger,
 		Template:    c.Template,
 		CommandType: c.CommandType,
