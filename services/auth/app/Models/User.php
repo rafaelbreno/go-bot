@@ -14,9 +14,10 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable, Uuid;
 
     const VALIDATION_RULES = [
-        'username' => ['unique:users', 'required', 'max:16', 'min:10'],
+        'username' => ['unique:users', 'required', 'max:16', 'min:5'],
         'password' => ['required', 'confirmed'],
         'password_confirmation' => ['required'],
+        'email' => ['unique:users', 'required', 'email']
     ];
 
     /**
@@ -25,7 +26,7 @@ class User extends Authenticatable
      * @var string[]
      */
     protected $fillable = [
-        'name',
+        'username',
         'email',
         'password',
     ];
