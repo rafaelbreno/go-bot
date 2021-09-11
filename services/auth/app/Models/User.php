@@ -20,6 +20,11 @@ class User extends Authenticatable
         'email' => ['unique:users', 'required', 'email']
     ];
 
+    const LOGIN_VALIDATION_RULES = [
+        'username' => ['required', 'max:16', 'min:5'],
+        'password' => ['required'],
+    ];
+
     /**
      * The attributes that are mass assignable.
      *
