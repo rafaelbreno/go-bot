@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\Uuid;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -11,6 +12,12 @@ use Laravel\Sanctum\HasApiTokens;
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, Uuid;
+
+    const VALIDATION_RULES = [
+        'username' => ['unique:users', 'required', 'max:16', 'min:10'],
+        'password' => ['required', 'confirmed'],
+        'password_confirmation' => ['required'],
+    ];
 
     /**
      * The attributes that are mass assignable.
