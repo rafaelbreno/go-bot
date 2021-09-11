@@ -16,3 +16,7 @@ config :auth, Users.Repo,
 
 config :auth,
   ecto_repos: [Users.Repo]
+
+config :auth, Auth.Guardian,
+       issuer: "auth",
+       secret_key: "zflZDuniaypJu4x/hJKHj3WipCV6ZJIquoarCx6k7qgGKd+fKZ7t2kiygUrL0OGb"

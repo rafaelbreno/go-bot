@@ -1,8 +1,11 @@
 defmodule Auth.Router do
   use Plug.Router 
 
+  alias Fields.Plug.VerifyRequest
+
   plug :match
   plug :dispatch
+  plug VerifyRequest, fields: ["username", "password"], paths: ["/auth/create", "/auth/login"]
 
   plug Plug.Parsers,
     parsers: [:json],
@@ -10,6 +13,18 @@ defmodule Auth.Router do
     json_decoder: Poison
 
   get "/test" do
+    conn
+    |> put_resp_content_type("application/json")
+    |> send_resp(200, Poison.encode!(message()))
+  end
+
+  post "/create" do
+    conn
+    |> put_resp_content_type("application/json")
+    |> send_resp(200, Poison.encode!(message()))
+  end
+
+  post "/login" do
     conn
     |> put_resp_content_type("application/json")
     |> send_resp(200, Poison.encode!(message()))
