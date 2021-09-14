@@ -14,8 +14,8 @@ import (
 type CommandRepo interface {
 	Create(cmd entity.Command) (entity.Command, error)
 	Update(id string, cmd entity.Command) (entity.Command, error)
-	Read(id string) (entity.Command, error)
-	Delete(id string) error
+	Read(id, user_id string) (entity.Command, error)
+	Delete(id, user_id string) error
 }
 
 // CommandRepoCtx represents
@@ -55,10 +55,10 @@ func (cr CommandRepoCtx) Create(cmd entity.Command) (entity.Command, error) {
 
 // Read returns a Command from the
 // given ID.
-func (cr CommandRepoCtx) Read(id string) (entity.Command, error) {
+func (cr CommandRepoCtx) Read(id, user_id string) (entity.Command, error) {
 	cmdFound := new(entity.Command)
 
-	if err := cr.Storage.SQL.Client.First(&cmdFound, "id = ?", id).Error; err != nil {
+	if err := cr.Storage.SQL.Client.First(&cmdFound, "id = ? AND user_id = ?", id, user_id).Error; err != nil {
 		cr.Ctx.Logger.Error(err.Error())
 		return entity.Command{}, err
 	}
@@ -71,7 +71,7 @@ func (cr CommandRepoCtx) Read(id string) (entity.Command, error) {
 func (cr CommandRepoCtx) Update(id string, cmd entity.Command) (entity.Command, error) {
 	cmdNew := new(entity.Command)
 
-	if err := cr.Storage.SQL.Client.First(&cmdNew, "id = ?", id).Error; err != nil {
+	if err := cr.Storage.SQL.Client.First(&cmdNew, "id = ? AND user_id = ?", id, cmd.UserID.String()).Error; err != nil {
 		cr.Ctx.Logger.Error(err.Error())
 		return entity.Command{}, err
 	}
@@ -98,10 +98,10 @@ func (cr CommandRepoCtx) Update(id string, cmd entity.Command) (entity.Command, 
 
 // Delete removes a command from DB
 // with given ID
-func (cr CommandRepoCtx) Delete(id string) error {
+func (cr CommandRepoCtx) Delete(id, user_id string) error {
 	cmd := new(entity.Command)
 
-	err := cr.Storage.SQL.Client.Where("id = ?", id).Delete(&cmd).Error
+	err := cr.Storage.SQL.Client.Where("id = ? AND user_id = ?", id, user_id).Delete(&cmd).Error
 
 	if err != nil {
 		cr.Ctx.Logger.Error(err.Error())
