@@ -24,6 +24,7 @@ const (
 // Command stores data related.
 type Command struct {
 	ID          uuid.UUID `json:"id" gorm:"type:uuid;default:gen_random_uuid()"`
+	UserID      uuid.UUID `json:"user_id" gorm:"type:uuid"`
 	Trigger     string    `json:"trigger" gorm:"size:16"`
 	Template    string    `json:"template" gorm:"size:400"`
 	Cooldown    string    `json:"cooldown" gorm:"size:16"`
@@ -38,6 +39,7 @@ type Command struct {
 func (c Command) ToJSON() CommandJSON {
 	return CommandJSON{
 		ID:          c.ID,
+		UserID:      c.UserID,
 		Trigger:     c.Trigger,
 		Template:    c.Template,
 		CommandType: c.CommandType,
@@ -64,6 +66,7 @@ func (c *Command) UpdateFields(cmdFields Command) {
 // http request
 type CommandJSON struct {
 	ID          uuid.UUID `json:"id"`
+	UserID      uuid.UUID `json:"user_id"`
 	Trigger     string    `json:"trigger"`
 	Template    string    `json:"template"`
 	Cooldown    string    `json:"cooldown"`
@@ -73,6 +76,7 @@ type CommandJSON struct {
 func (c *CommandJSON) ToCommand() Command {
 	return Command{
 		ID:          c.ID,
+		UserID:      c.UserID,
 		Trigger:     c.Trigger,
 		Template:    c.Template,
 		CommandType: c.CommandType,
@@ -82,7 +86,6 @@ func (c *CommandJSON) ToCommand() Command {
 
 // ToJSONString returns CommandJSON as JSON string
 func (c *CommandJSON) ToJSONString() ([]byte, error) {
-
 	b, err := json.Marshal(c)
 
 	return b, err

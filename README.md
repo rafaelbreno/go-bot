@@ -35,13 +35,20 @@
   - [x] Produce - Kafka
 
 ### TODOv4:
-- [ ] Queue Manager
-  - [ ] Create microservice
-  - [ ] Implement the communication between API and Kafka/RabbitMQ
+- [x] Queue Manager
+  - [x] Create microservice
+  - [x] Implement the communication between API and Kafka/RabbitMQ
+  - [x] Implement Redis
+  - [x] Consume - RabbitMQ/Kafka
+  - [x] Insert/Update/Delete Redis rows
+
+### TODOv5
+- [ ] Auth Service
   - [ ] Implement Redis
-  - [ ] Consume - RabbitMQ/Kafka
-  - [ ] Insert/Update/Delete Redis rows
-  - [ ] Implement HealthCheck
+- [ ] API
+  - [ ] Communicate with Auth Service
+  - [ ] Add middleware
+  - [x] Update Migrations
 
 ### TODO(v?):
 - [ ] Local deploy Docker

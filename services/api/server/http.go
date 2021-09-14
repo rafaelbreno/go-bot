@@ -7,6 +7,7 @@ import (
 	"github.com/rafaelbreno/go-bot/api/config"
 	"github.com/rafaelbreno/go-bot/api/handler"
 	"github.com/rafaelbreno/go-bot/api/internal"
+	"github.com/rafaelbreno/go-bot/api/middlewares"
 )
 
 // Server manages HTTP
@@ -57,10 +58,20 @@ func (s *Server) routes() {
 			"message": "PONG",
 		})
 	})
+
+	a := s.HTTP.Group("/test", middlewares.CheckAuth)
+
+	a.Get("/ping", func(c *fiber.Ctx) error {
+		s.Ctx.Logger.Info("GET /test")
+		s.Ctx.Logger.Info(c.UserContext().Value("user_id").(string))
+		return c.JSON(map[string]string{
+			"message": "PONG",
+		})
+	})
 }
 
 func (s *Server) commandRoutes() {
-	commandGroup := s.HTTP.Group("/command")
+	commandGroup := s.HTTP.Group("/command", middlewares.CheckAuth)
 
 	ch := handler.NewCommandHandler()
 

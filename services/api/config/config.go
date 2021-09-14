@@ -45,6 +45,9 @@ func init() {
 			"KAFKA_URL":      os.Getenv("KAFKA_URL"),
 			"KAFKA_PORT":     os.Getenv("KAFKA_PORT"),
 			"KAFKA_TOPIC":    os.Getenv("KAFKA_TOPIC"),
+			"AUTH_URL":       os.Getenv("AUTH_URL"),
+			"AUTH_PORT":      os.Getenv("AUTH_PORT"),
+			"AUTH_ENDPOINT":  os.Getenv("AUTH_ENDPOINT"),
 			"API_PORT":       getPort(),
 		},
 	}

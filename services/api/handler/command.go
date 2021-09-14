@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 	"github.com/rafaelbreno/go-bot/api/entity"
 	"github.com/rafaelbreno/go-bot/api/repository"
 )
@@ -41,6 +42,8 @@ func (h *CommandHandler) Create(c *fiber.Ctx) error {
 			})
 	}
 
+	commandJSON.UserID = uuid.MustParse(GetUserID(c))
+
 	command, err := h.repo.Create(commandJSON.ToCommand())
 
 	if err != nil {
@@ -59,7 +62,7 @@ func (h *CommandHandler) Create(c *fiber.Ctx) error {
 
 // Read - return a Command with given ID
 func (h *CommandHandler) Read(c *fiber.Ctx) error {
-	command, err := h.repo.Read(c.Params("id"))
+	command, err := h.repo.Read(c.Params("id"), GetUserID(c))
 
 	if err != nil {
 		h.repo.Ctx.Logger.Error(err.Error())
@@ -95,6 +98,7 @@ func (h *CommandHandler) Update(c *fiber.Ctx) error {
 				"error": err.Error(),
 			})
 	}
+	commandJSON.UserID = uuid.MustParse(GetUserID(c))
 
 	command, err := h.repo.Update(c.Params("id"), commandJSON.ToCommand())
 
@@ -115,7 +119,7 @@ func (h *CommandHandler) Update(c *fiber.Ctx) error {
 // Delete - receive a id and delete the
 // command identified by it
 func (h *CommandHandler) Delete(c *fiber.Ctx) error {
-	err := h.repo.Delete(c.Params("id"))
+	err := h.repo.Delete(c.Params("id"), GetUserID(c))
 
 	if err != nil {
 		h.repo.Ctx.Logger.Error(err.Error())
@@ -131,4 +135,8 @@ func (h *CommandHandler) Delete(c *fiber.Ctx) error {
 		JSON(fiber.Map{
 			"message": "Command deleted!",
 		})
+}
+
+func GetUserID(f *fiber.Ctx) string {
+	return f.UserContext().Value("user_id").(string)
 }
