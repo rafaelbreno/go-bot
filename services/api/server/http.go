@@ -52,7 +52,7 @@ func (s *Server) Close() {
 func (s *Server) routes() {
 	s.commandRoutes()
 
-	s.Get("/ping", func(c *fiber.Ctx) error {
+	s.HTTP.Get("/ping", func(c *fiber.Ctx) error {
 		s.Ctx.Logger.Info("GET /test")
 		return c.JSON(map[string]string{
 			"message": "PONG",
