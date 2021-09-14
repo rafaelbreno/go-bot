@@ -2,10 +2,9 @@ package main
 
 import (
 	"os"
-	"os/signal"
-	"syscall"
 
 	"github.com/rafaelbreno/go-bot/api/config"
+	"github.com/rafaelbreno/go-bot/api/entity"
 	"github.com/rafaelbreno/go-bot/api/internal"
 	"github.com/rafaelbreno/go-bot/api/server"
 )
@@ -19,22 +18,19 @@ func init() {
 }
 
 func main() {
+	config.Storage.SQL.Client.AutoMigrate(&entity.Command{})
+
 	ctx.Logger.Info("Starting app")
 
-	stop := make(chan os.Signal, 1)
-	signal.Notify(stop, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
-
-	go sv.ListenAndServe()
+	sv.ListenAndServe()
 
 	defer sv.Close()
-
-	<-stop
 
 	st := config.Storage
 
 	defer st.KafkaClient.P.Close()
 	db, _ := st.SQL.Client.DB()
-	defer func(){
+	defer func() {
 		if err := db.Close(); err != nil {
 			ctx.Logger.Error(err.Error())
 			os.Exit(0)
