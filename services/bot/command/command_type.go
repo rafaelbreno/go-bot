@@ -4,4 +4,5 @@ const (
 	Simple int = iota
 	Random
 	Cupido
+	Spotify
 )

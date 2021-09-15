@@ -5,6 +5,7 @@ import (
 	"regexp"
 	"time"
 
+	"github.com/rafaelbreno/go-bot/command/spotify"
 	"github.com/rafaelbreno/go-bot/internal"
 )
 
@@ -52,6 +53,14 @@ var commands = map[string]*Command{
 		HasCooldown: false,
 		Answer:      "/me {user} sua alma gêmea é: @{user_list}",
 	},
+	"!music": {
+		Key:         "!music",
+		Type:        Spotify,
+		Answer:      "Currently playing: {music}",
+		HasCooldown: true,
+		Cooldown:    time.Duration(60 * time.Second),
+		ExpireAt:    0,
+	},
 }
 
 var (
@@ -91,6 +100,10 @@ func (c *Command) prepare(act *Action, ctx *CommandCtx) string {
 		c.ExpireAt = timeNow.Add(c.Cooldown).Unix()
 	}
 
+	p := spotify.Player{
+		Ctx: ctx.Ctx,
+	}
+
 	switch c.Type {
 	case Simple:
 		return replace(c.Answer, keyMap{
@@ -121,6 +134,10 @@ func (c *Command) prepare(act *Action, ctx *CommandCtx) string {
 		return replace(c.Answer, keyMap{
 			"{user}":      act.SentBy,
 			"{user_list}": ans,
+		})
+	case Spotify:
+		return replace(c.Answer, keyMap{
+			"{music}": p.CurrentlyPlaying(ctx.Ctx.Env["SPOTIFY_TOKEN"]),
 		})
 	default:
 		return ""
