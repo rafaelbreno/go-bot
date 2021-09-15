@@ -3,7 +3,6 @@ package main
 import (
 	"os"
 	"os/signal"
-	"strings"
 	"syscall"
 
 	"github.com/joho/godotenv"
@@ -42,11 +41,17 @@ func init() {
 	if err := godotenv.Load(); err != nil {
 		logger.Error(err.Error())
 	}
-
 	ctxs = internal.WriteContexts(logger,
 		os.Getenv("BOT_OAUTH_TOKEN"),
 		os.Getenv("BOT_USERNAME"),
-		strings.Split(os.Getenv("CHANNEL_NAME"), ","))
+		[]internal.Channel{
+			{
+				Name: "rafiusky",
+				Env: map[string]string{
+					"SPOTIFY_TOKEN": os.Getenv("SPOTIFY_TOKEN"),
+				},
+			},
+		})
 
 	setConnections()
 }
