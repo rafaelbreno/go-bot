@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package proto;
+option go_package = "/proto";
+
+service Sender {
+  rpc ReceiveMessage(MessageRequest) returns (Empty) {}
+}
+
+message MessageRequest {
+  string channel = 1;
+  string msg = 2;
+}
+
+message Empty {}
