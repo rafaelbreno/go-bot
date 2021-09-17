@@ -4,7 +4,7 @@ package proto;
 option go_package = "/proto";
 
 service Sender {
-  rpc ReceiveMessage(MessageRequest) returns (Empty) {}
+  rpc SendMessage(MessageRequest) returns (Empty) {}
 }
 
 message MessageRequest {
