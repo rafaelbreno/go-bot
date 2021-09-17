@@ -16,13 +16,14 @@ func NewContext() *Context {
 	if err := godotenv.Load(); err != nil {
 		panic(err)
 	}
+	l, _ := zap.NewProduction()
 
 	c := Context{
 		Env: map[string]string{
 			"IRC_URL":  os.Getenv("API_IRC_URL"),
 			"IRC_PORT": os.Getenv("API_IRC_PORT"),
 		},
-		Logger: zap.NewProduction(),
+		Logger: l,
 	}
 
 	return &c
