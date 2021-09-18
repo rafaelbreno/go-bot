@@ -6,6 +6,7 @@ import (
 	"github.com/rafaelbreno/go-bot/services/message-reader/conn"
 	"github.com/rafaelbreno/go-bot/services/message-reader/helpers"
 	"github.com/rafaelbreno/go-bot/services/message-reader/internal"
+	"github.com/rafaelbreno/go-bot/services/message-reader/message"
 	"github.com/rafaelbreno/go-bot/services/message-reader/storage"
 )
 
@@ -29,10 +30,15 @@ func NewReader(ctx *internal.Context, st storage.Storage) *Reader {
 
 func (r *Reader) Start() {
 	r.joinRedis()
+	p := message.Parser{
+		Ctx: r.Ctx,
+		IRC: r.IRC,
+	}
+
 	for {
 		select {
 		case msg := <-r.IRC.Msg:
-			r.Ctx.Logger.Info(msg)
+			go p.Send(msg)
 		}
 	}
 }
