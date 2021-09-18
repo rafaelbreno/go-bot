@@ -27,12 +27,12 @@ var (
 )
 
 // :ricardinst!ricardinst@ricardinst.tmi.twitch.tv PRIVMSG #rafiusky :e
-func (p *Parser) Send(msg string) {
+func (p *Parser) Parse(msg string) *Message {
 	fmt.Println(msg)
 
 	if msg[0:4] == "PING" {
 		p.Pong()
-		return
+		return &Message{}
 	}
 
 	byteMsg := []byte(msg)
@@ -48,16 +48,16 @@ func (p *Parser) Send(msg string) {
 	channel := channelNameRegex.FindString(msg)
 
 	if channel == "" {
-		return
+		return &Message{}
 	}
 
 	val := strings.SplitN(msg, ":", 3)
 
 	if len(val) <= 3 {
-		return
+		return &Message{}
 	}
 
-	_ = Message{
+	return &Message{
 		SentBy:  string(sentBy),
 		Channel: channel[1:],
 		Value:   val[2],
