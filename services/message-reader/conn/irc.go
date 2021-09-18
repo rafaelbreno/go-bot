@@ -1,8 +1,10 @@
 package conn
 
 import (
+	"bufio"
 	"fmt"
 	"net"
+	"net/textproto"
 	"os"
 	"time"
 
@@ -12,6 +14,8 @@ import (
 type IRC struct {
 	Conn net.Conn
 	Ctx  *internal.Context
+	TP   *textproto.Reader
+	Msg  chan string
 }
 
 const (
@@ -21,8 +25,9 @@ const (
 func NewIRC(ctx *internal.Context) *IRC {
 	i := IRC{
 		Ctx: ctx,
+		Msg: make(chan string, 1),
 	}
-	i.connect()
+	i.Listen()
 	return &i
 }
 
@@ -63,6 +68,26 @@ func (i *IRC) connect() {
 		os.Exit(0)
 	}
 	i.Ctx.Logger.Info(nick)
+	i.TP = textproto.NewReader(bufio.NewReader(i.Conn))
+}
+
+// Listen start listen IRC channel,
+// and if it disconnects, it will try
+// to reconnect 3 times
+func (i *IRC) Listen() {
+	i.connect()
+	go func() {
+		for {
+			msg, err := i.TP.ReadLine()
+			if err != nil {
+				close(i.Msg)
+				i.Ctx.Logger.Error(err.Error())
+				i.connect()
+				continue
+			}
+			i.Msg <- msg
+		}
+	}()
 }
 
 // Close ends IRC connection
