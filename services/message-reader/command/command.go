@@ -1,4 +1,4 @@
-package commands
+package command
 
 // Command stores all data related
 // to one command
