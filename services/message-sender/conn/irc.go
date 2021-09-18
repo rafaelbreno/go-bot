@@ -1,10 +1,8 @@
 package conn
 
 import (
-	"bufio"
 	"fmt"
 	"net"
-	"net/textproto"
 	"os"
 	"time"
 
@@ -14,28 +12,18 @@ import (
 type IRC struct {
 	Conn net.Conn
 	Ctx  *internal.Context
-	TP   *textproto.Reader
-	Msg  chan string
 }
 
 const (
 	ircConnURL = `%s:%s`
 )
 
-func (i *IRC) Listen(ch chan string) {
+func NewIRC(ctx *internal.Context) *IRC {
+	i := IRC{
+		Ctx: ctx,
+	}
 	i.connect()
-
-	go func() {
-		for {
-			msg, err := i.TP.ReadLine()
-			if err != nil {
-				close(i.Msg)
-				i.connect()
-				continue
-			}
-			ch <- msg
-		}
-	}()
+	return &i
 }
 
 func (i *IRC) connect() {
@@ -63,27 +51,18 @@ func (i *IRC) connect() {
 		os.Exit(0)
 	}
 
-	pass := fmt.Sprintf("PASS %s\r\n", i.Ctx.OAuthToken)
+	pass := fmt.Sprintf("PASS %s\r\n", i.Ctx.Env["BOT_OAUTH_TOKEN"])
 	if _, err := fmt.Fprint(i.Conn, pass); err != nil {
 		i.Ctx.Logger.Error(err.Error())
 		os.Exit(0)
 	}
 
-	nick := fmt.Sprintf("NICK %s\r\n", i.Ctx.BotName)
+	nick := fmt.Sprintf("NICK %s\r\n", i.Ctx.Env["BOT_NAME"])
 	if _, err := fmt.Fprint(i.Conn, nick); err != nil {
 		i.Ctx.Logger.Error(err.Error())
 		os.Exit(0)
 	}
 	i.Ctx.Logger.Info(nick)
-	join := fmt.Sprintf("JOIN #%s\r\n", i.Ctx.ChannelName)
-	if _, err := fmt.Fprint(i.Conn, join); err != nil {
-		i.Ctx.Logger.Error(err.Error())
-		os.Exit(0)
-	}
-	i.Ctx.Logger.Info(join)
-
-	i.TP = textproto.NewReader(bufio.NewReader(i.Conn))
-	i.Msg = make(chan string, 1)
 }
 
 // Close ends IRC connection
