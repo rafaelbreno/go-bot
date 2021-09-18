@@ -28,6 +28,8 @@ func NewContext() *Context {
 			"BOT_NAME":        os.Getenv("BOT_NAME"),
 			"REDIS_HOST":      os.Getenv("REDIS_HOST"),
 			"REDIS_PORT":      os.Getenv("REDIS_PORT"),
+			"IRC_URL":         os.Getenv("API_IRC_URL"),
+			"IRC_PORT":        os.Getenv("API_IRC_PORT"),
 		},
 	}
 }
