@@ -20,8 +20,10 @@ func NewContext() *Context {
 
 	c := Context{
 		Env: map[string]string{
-			"IRC_URL":  os.Getenv("API_IRC_URL"),
-			"IRC_PORT": os.Getenv("API_IRC_PORT"),
+			"IRC_URL":         os.Getenv("API_IRC_URL"),
+			"IRC_PORT":        os.Getenv("API_IRC_PORT"),
+			"BOT_OAUTH_TOKEN": os.Getenv("BOT_OAUTH_TOKEN"),
+			"BOT_NAME":        os.Getenv("BOT_NAME"),
 		},
 		Logger: l,
 	}
