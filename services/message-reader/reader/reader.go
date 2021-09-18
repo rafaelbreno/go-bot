@@ -38,7 +38,8 @@ func (r *Reader) Start() {
 	for {
 		select {
 		case msg := <-r.IRC.Msg:
-			go p.Send(msg)
+			m := p.Parse(msg)
+			go m.Send(r.Ctx, r.Storage)
 		}
 	}
 }
