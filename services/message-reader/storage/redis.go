@@ -31,23 +31,25 @@ func NewRedis(ctx *internal.Context) *Redis {
 // GetChannels retrieves from Redis a list
 // of all channels
 func (r *Redis) GetChannels(key string) []string {
-	var channels []string
+	var channels struct {
+		Chs []string `json:"channels"`
+	}
 
 	res, err := r.Conn.Get(context.Background(), key).Result()
 
 	if err != nil {
 		r.Ctx.Logger.Error(err.Error())
-		return channels
+		return channels.Chs
 	}
 
 	err = json.Unmarshal([]byte(res), &channels)
 
 	if err != nil {
 		r.Ctx.Logger.Error(err.Error())
-		return channels
+		return channels.Chs
 	}
 
-	return channels
+	return channels.Chs
 }
 
 // GetCommand retrieves from Redis a command
