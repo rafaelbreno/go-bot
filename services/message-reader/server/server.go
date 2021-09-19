@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/rafaelbreno/go-bot/services/message-reader/internal"
@@ -11,6 +12,7 @@ import (
 type Server struct {
 	Msg    chan *proto.MessageRequest
 	Client proto.SenderClient
+	Ctx    *internal.Context
 }
 
 func NewServer(ctx *internal.Context) *Server {
@@ -27,6 +29,7 @@ func NewServer(ctx *internal.Context) *Server {
 	return &Server{
 		Msg:    make(chan *proto.MessageRequest),
 		Client: client,
+		Ctx:    ctx,
 	}
 }
 
@@ -34,7 +37,11 @@ func (s *Server) Start() {
 	for {
 		select {
 		case msg := <-s.Msg:
-			fmt.Println(msg)
+			if _, err := s.Client.SendMessage(context.Background(), msg, nil); err != nil {
+				s.Ctx.Logger.Panic(err.Error())
+			}
+			fmt.Println(msg.Channel)
+			fmt.Println(msg.Msg)
 		}
 	}
 }
