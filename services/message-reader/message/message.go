@@ -25,9 +25,13 @@ var (
 func (m *Message) Send(ctx *internal.Context, st *storage.Storage) {
 	trigger := triggerRegex.FindString(m.Value)
 
+	if trigger == "" {
+		return
+	}
+
 	cmd := storage.GetCommand(m.Channel, trigger, *st)
 
-	if cmd == nilCommand {
+	if nilCommand == cmd {
 		return
 	}
 
