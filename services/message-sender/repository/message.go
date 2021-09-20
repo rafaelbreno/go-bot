@@ -1,10 +1,10 @@
 package repository
 
 import (
-	"github.com/rafaelbreno/go-bot/services/message-reader/conn"
-	"github.com/rafaelbreno/go-bot/services/message-reader/internal"
-	"github.com/rafaelbreno/go-bot/services/message-reader/proto"
-	"github.com/rafaelbreno/go-bot/services/message-reader/sender"
+	"github.com/rafaelbreno/go-bot/services/message-sender/conn"
+	"github.com/rafaelbreno/go-bot/services/message-sender/internal"
+	"github.com/rafaelbreno/go-bot/services/message-sender/proto"
+	"github.com/rafaelbreno/go-bot/services/message-sender/sender"
 )
 
 type MessageRepo interface {

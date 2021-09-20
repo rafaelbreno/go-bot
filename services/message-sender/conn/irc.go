@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/rafaelbreno/go-bot/services/message-reader/internal"
+	"github.com/rafaelbreno/go-bot/services/message-sender/internal"
 )
 
 type IRC struct {

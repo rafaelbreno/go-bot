@@ -3,7 +3,7 @@ package helpers
 import (
 	"testing"
 
-	"github.com/rafaelbreno/go-bot/services/message-reader/test"
+	"github.com/rafaelbreno/go-bot/services/message-sender/test"
 )
 
 func TestSlice(t *testing.T) {

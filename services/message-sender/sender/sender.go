@@ -3,9 +3,9 @@ package sender
 import (
 	"fmt"
 
-	"github.com/rafaelbreno/go-bot/services/message-reader/conn"
-	"github.com/rafaelbreno/go-bot/services/message-reader/helpers"
-	"github.com/rafaelbreno/go-bot/services/message-reader/internal"
+	"github.com/rafaelbreno/go-bot/services/message-sender/conn"
+	"github.com/rafaelbreno/go-bot/services/message-sender/helpers"
+	"github.com/rafaelbreno/go-bot/services/message-sender/internal"
 )
 
 // Sender manages the channel that are connected
@@ -44,6 +44,11 @@ func (s *Sender) joinChat(name string) {
 
 func (s *Sender) partChat(name string) {
 	s.write(fmt.Sprintf("PART #%s", name))
+	s.Channels = helpers.RemoveElementStr(s.Channels, name)
+}
+
+func (s *Sender) Pong() {
+	s.write("PONG")
 	s.Channels = helpers.RemoveElementStr(s.Channels, name)
 }
 
