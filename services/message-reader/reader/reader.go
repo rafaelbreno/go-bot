@@ -35,13 +35,16 @@ func (r *Reader) Start() {
 		IRC: r.IRC,
 	}
 
-	for {
-		select {
-		case msg := <-r.IRC.Msg:
-			m := p.Parse(msg)
-			go m.Send(r.Ctx, r.Storage)
+	go func() {
+		for {
+			select {
+			case msg := <-r.IRC.Msg:
+				r.Ctx.Logger.Info(fmt.Sprintf("received %s", msg))
+				m := p.Parse(msg)
+				go m.Send(r.Ctx, &r.Storage)
+			}
 		}
-	}
+	}()
 }
 
 func (r *Reader) joinRedis() {
