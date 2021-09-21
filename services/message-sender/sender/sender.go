@@ -47,11 +47,6 @@ func (s *Sender) partChat(name string) {
 	s.Channels = helpers.RemoveElementStr(s.Channels, name)
 }
 
-func (s *Sender) Pong() {
-	s.write("PONG")
-	s.Channels = helpers.RemoveElementStr(s.Channels, name)
-}
-
 func (s *Sender) write(msg string) {
 	s.Ctx.Logger.Info("Sending Message")
 	_, err := s.IRC.Conn.Write([]byte(fmt.Sprintf("%s\r\n", msg)))
