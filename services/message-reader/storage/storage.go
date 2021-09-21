@@ -30,5 +30,9 @@ func GetCommand(channel, key string, s Storage) command.Command {
 		return command.Command{}
 	}
 
-	return s.GetCommand(fmt.Sprintf(commandKey, channel, key))
+	redisKey := fmt.Sprintf(commandKey, channel, key)
+
+	cmd := s.GetCommand(redisKey)
+
+	return cmd
 }
