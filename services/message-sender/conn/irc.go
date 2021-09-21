@@ -25,7 +25,7 @@ func NewIRC(ctx *internal.Context) *IRC {
 		Ctx: ctx,
 	}
 	i.connect()
-	i.pong()
+	go i.pong()
 	return &i
 }
 
@@ -33,14 +33,12 @@ func (i *IRC) pong() {
 	tp := textproto.NewReader(bufio.NewReader((i.Conn)))
 
 	for {
-		msg, err := tp.ReadLine()
-		if err != nil {
-			i.Close()
-			i.connect()
-		}
-		if msg[:4] == "PING" {
-			fmt.Fprint(i.Conn, "PONG")
-			i.Ctx.Logger.Info("PONG")
+		msg, _ := tp.ReadLine()
+		if len(msg) > 3 {
+			if msg[:4] == "PING" {
+				fmt.Fprint(i.Conn, "PONG")
+				i.Ctx.Logger.Info("PONG")
+			}
 		}
 	}
 }
