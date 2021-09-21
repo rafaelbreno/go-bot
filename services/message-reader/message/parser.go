@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	channelNameRegex = regexp.MustCompile(`#[a-zA-Z0-9\_]{1,}`)
+	channelNameRegex = regexp.MustCompile(`#[a-zA-Z0-9_]+`)
 )
 
 type Parser struct {
@@ -19,16 +19,16 @@ type Parser struct {
 }
 
 func (p *Parser) Pong() {
-	fmt.Fprint(p.IRC.Conn, fmt.Sprint("PONG\r\n"))
+	p.Ctx.Logger.Info("PONG")
+	_, err := fmt.Fprint(p.IRC.Conn, "PONG\r\n")
+	if err != nil {
+		p.Ctx.Logger.Error(err.Error())
+	}
 }
-
-var (
-	channelRegex = regexp.MustCompile(`#[a-zA-Z0-9\_]{1,}`)
-)
 
 // :ricardinst!ricardinst@ricardinst.tmi.twitch.tv PRIVMSG #rafiusky :e
 func (p *Parser) Parse(msg string) *Message {
-	fmt.Println(msg)
+	p.Ctx.Logger.Info(msg)
 
 	if msg[0:4] == "PING" {
 		p.Pong()
@@ -53,12 +53,12 @@ func (p *Parser) Parse(msg string) *Message {
 
 	val := strings.SplitN(msg, ":", 3)
 
-	if len(val) <= 3 {
+	if len(val) < 3 {
 		return &Message{}
 	}
 
 	return &Message{
-		SentBy:  string(sentBy),
+		SentBy:  string(sentBy[1:]),
 		Channel: channel[1:],
 		Value:   val[2],
 	}
