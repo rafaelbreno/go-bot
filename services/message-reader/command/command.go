@@ -27,6 +27,8 @@ type Field struct {
 }
 
 func (c *Command) Parse() string {
+	fmt.Println("SENT BY:", c.SentBy)
+
 	c.Replace("{sent_by}", c.SentBy)
 
 	for _, field := range c.Fields {
@@ -43,8 +45,8 @@ func (c *Command) Replace(key, value string) {
 }
 
 var (
-	regexRandom = regexp.MustCompile(`\{random\.[0-9]{1,}\-[0-9]{1,}\}`)
-	regexNumber = regexp.MustCompile("[0-9]{1,}")
+	regexRandom = regexp.MustCompile(`{random\.[0-9]+-[0-9]+}`)
+	regexNumber = regexp.MustCompile("[0-9]+")
 )
 
 // CheckDefault find and replace default fields
@@ -65,9 +67,7 @@ func (c *Command) replaceRandomField(fields []string) {
 		minNum, _ := strconv.Atoi(nums[0])
 		maxNum, _ := strconv.Atoi(nums[1])
 		if minNum > maxNum {
-			tmp := minNum
-			minNum = maxNum
-			maxNum = tmp
+			minNum, maxNum = maxNum, minNum
 		}
 		randNum := rand.Intn(maxNum) - minNum
 		c.Answer = strings.ReplaceAll(c.Answer, k, strconv.Itoa(randNum))
