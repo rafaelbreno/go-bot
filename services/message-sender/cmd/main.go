@@ -22,7 +22,10 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	proto.RegisterSenderServer(grpcServer, server.NewServer(internal.NewContext()))
+
+	sv := server.NewServer(internal.NewContext())
+
+	proto.RegisterSenderServer(grpcServer, sv)
 
 	grpcServer.Serve(lis)
 }
