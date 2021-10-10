@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package proto;
+option go_package = "/proto";
+
+service Auth {
+  rpc Create(CreateRequest) returns (CreateResponse) {}
+  rpc Login(LoginRequest) returns (LoginResponse) {}
+  rpc Check(CheckRequest) returns (CheckResponse) {}
+}
+
+message CreateRequest {
+  string username = 1;
+  string password = 2;
+  string password_confirmation = 3;
+}
+
+message CreateResponse {
+  string token = 1;
+  string error = 2;
+}
+
+message LoginRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message LoginResponse {
+  string token = 1;
+  string error = 2;
+}
+
+message CheckRequest {
+  string token = 1;
+}
+
+message CheckResponse {
+  string error = 1;
+}
