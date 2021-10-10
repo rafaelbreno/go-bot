@@ -1,16 +1,18 @@
 package storage
 
-import "go.uber.org/zap"
+import (
+	"github.com/rafaelbreno/go-bot/auth/internal"
+)
 
 type Storage struct {
 	Redis *Redis
 	Pg    *Postgres
 }
 
-func NewStorage(l *zap.Logger) *Storage {
+func NewStorage(c *internal.Common) *Storage {
 	s := Storage{
-		Redis: NewRedis(l),
-		Pg:    NewPostgres(l),
+		Redis: NewRedis(c),
+		Pg:    NewPostgres(c),
 	}
 
 	return &s
