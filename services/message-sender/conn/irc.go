@@ -12,8 +12,9 @@ import (
 )
 
 type IRC struct {
-	Conn net.Conn
-	Ctx  *internal.Context
+	Conn     net.Conn
+	Ctx      *internal.Context
+	connFlag chan bool
 }
 
 const (
