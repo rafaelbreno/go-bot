@@ -47,6 +47,7 @@ func (a *AuthRepoCtx) Create(req *proto.CreateRequest) *proto.CreateResponse {
 			Error: fmt.Sprintf(emptyField, "password"),
 		}
 	}
+
 	if req.Password != req.PasswordConfirmation {
 		errMsg := fmt.Sprintf(fieldsNotMatch, "password", "password_confirmation")
 		return &proto.CreateResponse{
@@ -80,6 +81,35 @@ func (a *AuthRepoCtx) Create(req *proto.CreateRequest) *proto.CreateResponse {
 }
 
 func (a *AuthRepoCtx) Login(req *proto.LoginRequest) *proto.LoginResponse {
+	if req.Username == "" {
+		return &proto.LoginResponse{
+			Error: fmt.Sprintf(emptyField, "username"),
+		}
+	}
+
+	if req.Password == "" {
+		return &proto.LoginResponse{
+			Error: fmt.Sprintf(emptyField, "password"),
+		}
+	}
+
+	u := new(user.User)
+
+	if err := a.Storage.Pg.Conn.
+		Model(u).
+		Where("? = ?", pg.Ident("username"), req.Username).
+		Limit(1).Select(); err != nil {
+		return &proto.LoginResponse{
+			Error: err.Error(),
+		}
+	}
+
+	if !a.CheckPassword(u.Password, req.Password) {
+		return &proto.LoginResponse{
+			Error: wrongPassord,
+		}
+	}
+
 	return &proto.LoginResponse{}
 }
 
