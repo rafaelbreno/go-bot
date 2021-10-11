@@ -15,8 +15,12 @@ type Server struct {
 	Repo   *repository.AuthRepoCtx
 }
 
-func (s *Server) Create(ctx context.Context, req *proto.CreateRequest) *proto.CreateResponse {
-	return s.Repo.Create(req)
+func (s *Server) Create(ctx context.Context, req *proto.CreateRequest) (*proto.CreateResponse, error) {
+	return s.Repo.Create(req), nil
+}
+
+func (s *Server) Login(ctx context.Context, req *proto.LoginRequest) (*proto.LoginResponse, error) {
+	return s.Repo.Login(req), nil
 }
 
 func NewServer(common *internal.Common) *Server {
