@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-pg/pg/v10"
 	"github.com/rafaelbreno/go-bot/auth/internal"
+	"github.com/rafaelbreno/go-bot/auth/jwt"
 	"github.com/rafaelbreno/go-bot/auth/proto"
 	"github.com/rafaelbreno/go-bot/auth/storage"
 	"github.com/rafaelbreno/go-bot/auth/user"
@@ -19,6 +20,7 @@ type AuthRepo interface {
 
 type AuthRepoCtx struct {
 	Common  *internal.Common
+	JWT     *jwt.JWT
 	Storage *storage.Storage
 }
 
@@ -26,6 +28,7 @@ func NewAuthRepo(c *internal.Common, sto *storage.Storage) *AuthRepoCtx {
 	a := AuthRepoCtx{
 		Common:  c,
 		Storage: sto,
+		JWT:     jwt.NewJWT(sto),
 	}
 	return &a
 }
@@ -74,9 +77,15 @@ func (a *AuthRepoCtx) Create(req *proto.CreateRequest) *proto.CreateResponse {
 			Error: err.Error(),
 		}
 	}
+	token, err := a.JWT.NewToken(u.Id.String())
 
+	if err != nil {
+		return &proto.CreateResponse{
+			Error: err.Error(),
+		}
+	}
 	return &proto.CreateResponse{
-		Token: "teste",
+		Token: token,
 	}
 }
 
@@ -110,11 +119,27 @@ func (a *AuthRepoCtx) Login(req *proto.LoginRequest) *proto.LoginResponse {
 		}
 	}
 
-	return &proto.LoginResponse{}
+	token, err := a.JWT.NewToken(u.Id.String())
+
+	if err != nil {
+		return &proto.LoginResponse{
+			Error: err.Error(),
+		}
+	}
+	return &proto.LoginResponse{
+		Token: token,
+	}
 }
 
 func (a *AuthRepoCtx) Check(req *proto.CheckRequest) *proto.CheckResponse {
-	return &proto.CheckResponse{}
+	var errMsg string
+	if err := a.JWT.CheckToken(req.Token); err != nil {
+		errMsg = err.Error()
+	}
+
+	return &proto.CheckResponse{
+		Error: errMsg,
+	}
 }
 
 func (a *AuthRepoCtx) EncPassword(pw string) (string, error) {
