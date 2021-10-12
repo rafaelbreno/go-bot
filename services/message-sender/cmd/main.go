@@ -3,9 +3,9 @@ package main
 import (
 	"net"
 
-	"github.com/rafaelbreno/go-bot/services/message-reader/internal"
-	"github.com/rafaelbreno/go-bot/services/message-reader/proto"
-	"github.com/rafaelbreno/go-bot/services/message-reader/server"
+	"github.com/rafaelbreno/go-bot/services/message-sender/internal"
+	"github.com/rafaelbreno/go-bot/services/message-sender/proto"
+	"github.com/rafaelbreno/go-bot/services/message-sender/server"
 	"google.golang.org/grpc"
 )
 
@@ -22,7 +22,10 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	proto.RegisterSenderServer(grpcServer, server.NewServer(internal.NewContext()))
+
+	sv := server.NewServer(internal.NewContext())
+
+	proto.RegisterSenderServer(grpcServer, sv)
 
 	grpcServer.Serve(lis)
 }

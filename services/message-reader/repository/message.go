@@ -1,10 +1,11 @@
 package repository
 
 import (
-	"github.com/rafaelbreno/go-bot/services/message-sender/conn"
-	"github.com/rafaelbreno/go-bot/services/message-sender/internal"
-	"github.com/rafaelbreno/go-bot/services/message-sender/proto"
-	"github.com/rafaelbreno/go-bot/services/message-sender/sender"
+	"github.com/rafaelbreno/go-bot/services/message-reader/conn"
+	"github.com/rafaelbreno/go-bot/services/message-reader/internal"
+	"github.com/rafaelbreno/go-bot/services/message-reader/proto"
+	"github.com/rafaelbreno/go-bot/services/message-reader/reader"
+	"github.com/rafaelbreno/go-bot/services/message-reader/sender"
 )
 
 type MessageRepo interface {
@@ -15,7 +16,7 @@ type MessageRepo interface {
 // related to messages
 type MessageRepoCtx struct {
 	Ctx    *internal.Context
-	Sender *sender.Sender
+	Reader *reader.Reader
 }
 
 // SendMessage receives a message
@@ -30,7 +31,7 @@ func (m *MessageRepoCtx) SendMessage(msg *proto.MessageRequest) *proto.Empty {
 		return &proto.Empty{}
 	}
 
-	m.Sender.SendMessage(msg.Channel, msg.Msg)
+	m.Reader..SendMessage(msg.Channel, msg.Msg)
 
 	return &proto.Empty{}
 }

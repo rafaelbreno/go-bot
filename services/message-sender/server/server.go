@@ -3,9 +3,9 @@ package server
 import (
 	"context"
 
-	"github.com/rafaelbreno/go-bot/services/message-reader/internal"
-	"github.com/rafaelbreno/go-bot/services/message-reader/proto"
-	"github.com/rafaelbreno/go-bot/services/message-reader/repository"
+	"github.com/rafaelbreno/go-bot/services/message-sender/internal"
+	"github.com/rafaelbreno/go-bot/services/message-sender/proto"
+	"github.com/rafaelbreno/go-bot/services/message-sender/repository"
 )
 
 // Server handles gRPC connection

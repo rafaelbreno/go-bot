@@ -3,7 +3,7 @@ package helpers
 import (
 	"testing"
 
-	"github.com/rafaelbreno/go-bot/services/message-sender/test"
+	"github.com/rafaelbreno/go-bot/services/message-reader/test"
 )
 
 func TestSlice(t *testing.T) {
@@ -46,6 +46,28 @@ func TestSlice(t *testing.T) {
 		sl := []string{"A", "B", "C", "D", "E"}
 		want := []string{"A", "B", "D", "E"}
 		got := RemoveElementStr(sl, "C")
+		tts = append(tts, test.TestCases{
+			Name:     "FindInSliceStr",
+			Want:     want,
+			Got:      got,
+			TestType: test.Equal,
+		})
+	}
+	{
+		sl := []string{"A", "B", "C", "D", "E"}
+		want := true
+		got := Find(sl, "C")
+		tts = append(tts, test.TestCases{
+			Name:     "FindInSliceStr",
+			Want:     want,
+			Got:      got,
+			TestType: test.Equal,
+		})
+	}
+	{
+		sl := []string{"A", "B", "C", "D", "E"}
+		want := false
+		got := Find(sl, "X")
 		tts = append(tts, test.TestCases{
 			Name:     "FindInSliceStr",
 			Want:     want,

@@ -1,0 +1,21 @@
+## TODO
+- [ ] Storage(interface)
+  - [ ] Redis
+  - [ ] On bootstrap, get [channels] from Redis
+- [ ] gRPC
+  - [ ] Add Channel
+  - [ ] Remove Channel
+  - [ ] Update Channel
+- [ ] Commands
+  - [ ] Read from Channels
+  - [ ] Check Redis
+  - [ ] Parse Message
+  - [ ] Send to message-sender service via gRPC
+- [ ] Channels(struct)
+  - [ ] 
+- [ ] 
+- [ ] 
+  - [ ] 
+  - [ ] 
+  - [ ] 
+  - [ ] 
