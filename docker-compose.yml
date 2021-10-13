@@ -7,35 +7,130 @@ services:
       dockerfile: ../../.docker/golang/Dockerfile
     ports:
       - "${API_PORT}:${API_PORT}"
-    image: "bot_api"
-    container_name: "bot_api"
+    image: "${API_NAME}"
+    container_name: "${API_NAME}"
     environment:
-      - CHANNEL_NAME=${API_CHANNEL_NAME}
-      - BOT_OAUTH_TOKEN=${API_BOT_OAUTH_TOKEN}
-      - BOT_USERNAME=${API_BOT_USERNAME}
-      - IRC_URL=${API_IRC_URL}
-      - IRC_PORT=${API_IRC_PORT}
-  postgres:
+      - PGSQL_HOST=${API_PGSQL_HOST}
+      - PGSQL_PORT=${API_PGSQL_PORT}
+      - PGSQL_USER=${API_PGSQL_USER}
+      - PGSQL_PASSWORD=${API_PGSQL_PASSWORD}
+      - PGSQL_DBNAME=${API_PGSQL_DBNAME}
+      - PGSQL_NAME=${API_PGSQL_NAME}
+      - AUTH_HOST=${AUTH_NAME}
+      - AUTH_PORT=${AUTH_PORT}
+  api-postgres:
     build:
       context: .
       dockerfile: .docker/postgres/Dockerfile
     ports:
-      - "${PGSQL_PORT}:${PGSQL_PORT}"
-    image: ${PGSQL_NAME}
-    container_name: ${PGSQL_NAME}
+      - "${API_PGSQL_PORT}:${API_PGSQL_PORT}"
+    image: ${API_PGSQL_NAME}
+    container_name: ${API_PGSQL_NAME}
     environment:
-      - PGDATA=${PGSQL_DATA}
-      - POSTGRES_DB=${PGSQL_DBNAME}
-      - POSTGRES_USER=${PGSQL_USER}
-      - POSTGRES_PASSWORD=${PGSQL_PASSWORD}
-  redis:
+      - PGDATA=${API_PGSQL_DATA}
+      - POSTGRES_DB=${API_PGSQL_DBNAME}
+      - POSTGRES_USER=${API_PGSQL_USER}
+      - POSTGRES_PASSWORD=${API_PGSQL_PASSWORD}
+  auth:
+    build:
+      context: services/auth/
+      dockerfile: ../../.docker/golang/Dockerfile
+    ports:
+      - "${AUTH_PORT}:${AUTH_PORT}"
+    image: "${AUTH_NAME}"
+    container_name: "${AUTH_NAME}"
+    environment:
+      - AUTH_PORT=${AUTH_PORT}
+      - REDIS_HOST=${AUTH_REDIS_HOST}
+      - REDIS_PORT=${AUTH_REDIS_PORT}
+      - REDIS_NAME=${AUTH_REDIS_NAME}
+      - REDIS_DB=${AUTH_REDIS_DB}
+      - REDIS_PASSWORD=${AUTH_REDIS_PASSWORD}
+      - PGSQL_HOST=${AUTH_PGSQL_HOST}
+      - PGSQL_PORT=${AUTH_PGSQL_PORT}
+      - PGSQL_USER=${AUTH_PGSQL_USER}
+      - PGSQL_PASSWORD=${AUTH_PGSQL_PASSWORD}
+      - PGSQL_DBNAME=${AUTH_PGSQL_DBNAME}
+      - PGSQL_NAME=${AUTH_PGSQL_NAME}
+  auth-postgres:
+    build:
+      context: .
+      dockerfile: .docker/postgres/Dockerfile
+    ports:
+      - "${AUTH_PGSQL_PORT}:${AUTH_PGSQL_PORT}"
+    image: ${AUTH_PGSQL_NAME}
+    container_name: ${AUTH_PGSQL_NAME}
+    environment:
+      - PGDATA=${AUTH_PGSQL_DATA}
+      - POSTGRES_DB=${AUTH_PGSQL_DBNAME}
+      - POSTGRES_USER=${AUTH_PGSQL_USER}
+      - POSTGRES_PASSWORD=${AUTH_PGSQL_PASSWORD}
+  auth-redis:
     build:
       context: .
       dockerfile: .docker/redis/Dockerfile
     ports:
-      - "${REDIS_PORT}:6379"
-    image: ${REDIS_NAME}
-    container_name: ${REDIS_NAME}
+      - "${AUTH_REDIS_PORT}:6379"
+    image: ${AUTH_REDIS_NAME}
+    container_name: ${AUTH_REDIS_NAME}
+  reader:
+    build:
+      context: services/reader/
+      dockerfile: ../../.docker/golang/Dockerfile
+    ports:
+      - "${READER_PORT}:${READER_PORT}"
+    image: "${READER_NAME}"
+    container_name: "${READER_NAME}"
+    environment:
+      - CHANNEL_NAME=${READER_CHANNEL_NAME}
+      - BOT_OAUTH_TOKEN=${READER_BOT_OAUTH_TOKEN}
+      - BOT_USERNAME=${READER_BOT_USERNAME}
+      - IRC_URL=${READER_IRC_URL}
+      - IRC_PORT=${READER_IRC_PORT}
+      - REDIS_HOST=${READER_REDIS_HOST}
+      - REDIS_PORT=${READER_REDIS_PORT}
+      - REDIS_NAME=${READER_REDIS_NAME}
+      - REDIS_DB=${READER_REDIS_DB}
+      - REDIS_PASSWORD=${READER_REDIS_PASSWORD}
+  reader-redis:
+    build:
+      context: .
+      dockerfile: .docker/redis/Dockerfile
+    ports:
+      - "${READER_REDIS_PORT}:6379"
+    image: ${READER_REDIS_NAME}
+    container_name: ${READER_REDIS_NAME}
+  sender:
+    build:
+      context: services/message-sender/
+      dockerfile: ../../.docker/golang/Dockerfile
+    ports:
+      - "${SENDER_PORT}:${SENDER_PORT}"
+    image: "${SENDER_NAME}"
+    container_name: "${SENDER_NAME}"
+    environment:
+      - CHANNEL_NAME=${SENDER_CHANNEL_NAME}
+      - BOT_OAUTH_TOKEN=${SENDER_BOT_OAUTH_TOKEN}
+      - BOT_USERNAME=${SENDER_BOT_USERNAME}
+      - IRC_URL=${SENDER_IRC_URL}
+      - IRC_PORT=${SENDER_IRC_PORT}
+  queue-mgr:
+    build:
+      context: services/queue-mgr/
+      dockerfile: ../../.docker/golang/Dockerfile
+    ports:
+      - "${QUEUE_MGR_PORT}:${QUEUE_MGR_PORT}"
+    image: "${QUEUE_MGR_NAME}"
+    container_name: "${QUEUE_MGR_NAME}"
+    environment:
+      - REDIS_HOST=${READER_REDIS_HOST}
+      - REDIS_PORT=${READER_REDIS_PORT}
+      - REDIS_NAME=${READER_REDIS_NAME}
+      - REDIS_DB=${READER_REDIS_DB}
+      - REDIS_PASSWORD=${READER_REDIS_PASSWORD}
+      - KAFKA_URL=${KAFKA_URL}
+      - KAFKA_PORT=${KAFKA_PORT}
+      - KAFKA_TOPIC=${KAFKA_TOPIC}
   zookeeper:
     image: wurstmeister/zookeeper:3.4.6
     container_name: "${ZOOKEEPER_NAME}"
