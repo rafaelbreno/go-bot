@@ -70,6 +70,16 @@ func (s *Server) routes() {
 	})
 }
 
+func (s *Server) authRoutes() {
+	authGroup := s.HTTP.Group("/auth")
+
+	ah := handler.NewUserHandler(s.Ctx)
+
+	authGroup.Post("/create", ah.Create)
+	authGroup.Post("/login", ah.Login)
+	authGroup.Post("/check", ah.Check)
+}
+
 func (s *Server) commandRoutes() {
 	commandGroup := s.HTTP.Group("/command", middlewares.CheckAuth)
 
