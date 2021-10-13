@@ -1,4 +1,4 @@
-FROM golang:1.16.7-alpine AS build
+FROM golang:1.17-alpine AS build
 
 WORKDIR /go/src/app
 
@@ -10,7 +10,8 @@ RUN go mod download
 COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -o bin/app cmd/main.go
 
-FROM golang:1.16.7-alpine
+FROM golang:1.17-alpine
+
 COPY --from=build /go/src/app/bin/app .
 
 EXPOSE 8070
